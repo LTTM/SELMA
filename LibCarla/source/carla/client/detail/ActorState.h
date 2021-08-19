@@ -41,6 +41,11 @@ namespace detail {
     const std::vector<uint8_t> &GetSemanticTags() const {
       return _description.semantic_tags;
     }
+	
+	std::vector<uint8_t> SetSemanticTags(const std::vector<uint8_t> tags) {
+      _description.semantic_tags = std::vector<uint8_t>(tags);
+      return _description.semantic_tags;
+    }
 
     SharedPtr<Actor> GetParent() const;
 

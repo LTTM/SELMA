@@ -13,6 +13,7 @@
 namespace carla {
 namespace rpc {
 
+/*
   enum class CityObjectLabel : uint8_t {
     None         =   0u,
     Buildings    =   1u,
@@ -37,6 +38,48 @@ namespace rpc {
     Dynamic      =  20u,
     Water        =  21u,
     Terrain      =  22u,
+    Any          =  0xFF
+  };
+*/
+
+enum class CityObjectLabel : uint8_t {
+	
+	// CityScapes Classes
+	Roads        =   0u,
+	Sidewalks    =   1u,
+    Buildings    =   2u,
+	Walls        =   3u,
+    Fences       =   4u,
+    Poles        =   5u,
+    TrafficLight =   6u,
+    TrafficSigns =   7u,
+    Vegetation   =   8u,
+    Terrain      =   9u,
+    Sky          =  10u,
+    Pedestrians  = 0xFE, // Class OverWritten at actor spawn
+	Persons      =  12u,
+	Riders       =  13u,
+	Vehicles     = 0xFD, // Class OverWritten at actor spawn
+	Cars         =  13u,
+	Trucks       =  14u,
+	Busses       =  15u,
+	Trains       =  16u,
+	Motorbikes   =  17u,
+	Bycicles     =  18u,
+	
+	// Additional Carla Classes
+	Other        =  19u,
+    RoadLines    =  20u,
+    Ground       =  21u,
+    Bridge       =  22u,
+    RailTrack    =  23u,
+    GuardRail    =  24u,
+    Static       =  25u,
+    Dynamic      =  26u,
+    Water        =  27u,
+
+	// Void Classes
+	None         =  0xFF,
     Any          =  0xFF
   };
 
