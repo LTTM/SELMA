@@ -430,6 +430,10 @@ namespace detail {
     void SetActorEnableGravity(Actor &actor, bool enabled) {
       _client.SetActorEnableGravity(actor.GetId(), enabled);
     }
+	
+	// void SetActorSemanticTags(Vehicle &vehicle, std::vector<uint8_t> tags) {
+      // _client.SetActorSemanticTags(vehicle.GetId(), tags);
+    // }
 
     /// @}
     // =========================================================================
