@@ -93,6 +93,27 @@ void ATagger::TagActor(const AActor &Actor, bool bTagForSemanticSegmentation)
   }
 }
 
+// Added method!
+// void ATagger::UpdateTags(const AActor &Actor, const std::map<uint8_t, uint8_t> &tagMap){
+  // // Iterate static meshes.
+  // TArray<UStaticMeshComponent *> StaticMeshComponents;
+  // Actor.GetComponents<UStaticMeshComponent>(StaticMeshComponents);
+  // for (UStaticMeshComponent *Component : StaticMeshComponents) {
+    // uint8_t oldLabel = Component->CustomDepthStencilValue;
+	// uint8_t newLabel = tagMap[oldLabel];
+    // SetStencilValue(*Component, newLabel, true);
+  // }
+  // // Iterate skeletal meshes.
+  // TArray<USkeletalMeshComponent *> SkeletalMeshComponents;
+  // Actor.GetComponents<USkeletalMeshComponent>(SkeletalMeshComponents);
+  // for (USkeletalMeshComponent *Component : SkeletalMeshComponents) {
+    // uint8_t oldLabel = Component->CustomDepthStencilValue;
+	// uint8_t newLabel = tagMap[oldLabel];
+    // SetStencilValue(*Component, newLabel, true);
+  // }
+// }
+
+
 void ATagger::TagActorsInLevel(UWorld &World, bool bTagForSemanticSegmentation)
 {
   for (TActorIterator<AActor> it(&World); it; ++it) {

@@ -1286,6 +1286,34 @@ void FCarlaServer::FPimpl::BindActions()
     return R<void>::Success();
   };
   
+  
+  // BIND_SYNC(update_semantic_tags) << [this](
+      // cr::ActorId ActorId,
+      // std::map<uint8_t, uint8_t> &tagMap) -> R<void>
+  // {
+    // REQUIRE_CARLA_EPISODE();
+    // FCarlaActor* CarlaActor = Episode->FindCarlaActor(ActorId);
+    // if (!CarlaActor)
+    // {
+      // return RespondError(
+          // "set_semantic_tags",
+          // ECarlaServerResponse::ActorNotFound,
+          // " Actor Id: " + FString::FromInt(ActorId));
+    // }
+    // //ECarlaServerResponse Response =
+    // //    CarlaActor->SetSemanticTags(tags);
+	// ECarlaServerResponse Response =
+        // ATagger::UpdateTags(CarlaActor, tagMap)
+    // if (Response != ECarlaServerResponse::Success)
+    // {
+      // return set_semantic_tags(
+          // "update_semantic_tags",
+          // Response,
+          // " Actor Id: " + FString::FromInt(ActorId));
+    // }
+    // return R<void>::Success();
+  // };
+  
   // BIND_SYNC(set_semantic_tags) << [this](
       // cr::ActorId ActorId,
       // std::vector<uint8_t> tags) -> R<void>
