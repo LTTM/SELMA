@@ -94,10 +94,10 @@ void ATagger::TagActor(const AActor &Actor, bool bTagForSemanticSegmentation)
 }
 
 // Added method!
-void ATagger::UpdateTags(const AActor &Actor, const std::map<uint8_t, uint8_t> &tagMap){
+void ATagger::UpdateTags(const AActor *Actor, const std::map<uint8_t, uint8_t> &tagMap){
   // Iterate static meshes.
   TArray<UStaticMeshComponent *> StaticMeshComponents;
-  Actor.GetComponents<UStaticMeshComponent>(StaticMeshComponents);
+  Actor->GetComponents<UStaticMeshComponent>(StaticMeshComponents);
   for (UStaticMeshComponent *Component : StaticMeshComponents) {
     uint8_t oldLabel = Component->CustomDepthStencilValue;
 	crp::CityObjectLabel newLabel = static_cast<crp::CityObjectLabel>(tagMap.at(oldLabel));
@@ -105,7 +105,7 @@ void ATagger::UpdateTags(const AActor &Actor, const std::map<uint8_t, uint8_t> &
   }
   // Iterate skeletal meshes.
   TArray<USkeletalMeshComponent *> SkeletalMeshComponents;
-  Actor.GetComponents<USkeletalMeshComponent>(SkeletalMeshComponents);
+  Actor->GetComponents<USkeletalMeshComponent>(SkeletalMeshComponents);
   for (USkeletalMeshComponent *Component : SkeletalMeshComponents) {
     uint8_t oldLabel = Component->CustomDepthStencilValue;
 	crp::CityObjectLabel newLabel = static_cast<crp::CityObjectLabel>(tagMap.at(oldLabel));
