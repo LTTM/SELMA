@@ -83,7 +83,8 @@ static boost::python::list GetSemanticTags(const carla::client::Actor &self) {
 void UpdateSemanticTags(carla::client::Actor &self, const boost::python::dict &tags) {
   const std::vector<uint8_t> &old_tags = self.GetSemanticTags();
   std::map<uint8_t, uint8_t> tagMap = PyDictToMap<uint8_t, int, uint8_t, int>(tags);
-  cc::Actor::UpdateSemanticTags(tagMap)
+  self.UpdateSemanticTags(tagMap);
+  //carla::client::UpdateSemanticTags(self, tagMap);
 }
 
 static void AddActorImpulse(carla::client::Actor &self,
@@ -149,7 +150,7 @@ void export_actor() {
         return attribute_dict;
       })
       .add_property("bounding_box", CALL_RETURNING_COPY(cc::Actor, GetBoundingBox))
-	  .def("set_semantic_tags", &UpdateSemanticTags, (arg("tags")))
+	  .def("update_semantic_tags", &UpdateSemanticTags, (arg("tags")))
       .def("get_world", CALL_RETURNING_COPY(cc::Actor, GetWorld))
       .def("get_location", &cc::Actor::GetLocation)
       .def("get_transform", &cc::Actor::GetTransform)

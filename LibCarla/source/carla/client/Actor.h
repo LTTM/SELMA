@@ -103,6 +103,8 @@ namespace client {
     void SetEnableGravity(bool enabled = true);
 
     rpc::ActorState GetActorState() const;
+	
+	void UpdateSemanticTags(const std::map<uint8_t, uint8_t> &tagMap);
 
     bool IsAlive() const {
       return GetEpisode().IsValid() && (GetActorState() != rpc::ActorState::PendingKill && GetActorState() != rpc::ActorState::Invalid) ;
