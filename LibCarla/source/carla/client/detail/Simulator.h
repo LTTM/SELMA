@@ -431,9 +431,9 @@ namespace detail {
       _client.SetActorEnableGravity(actor.GetId(), enabled);
     }
 	
-	// void SetActorSemanticTags(Vehicle &vehicle, std::vector<uint8_t> tags) {
-      // _client.SetActorSemanticTags(vehicle.GetId(), tags);
-    // }
+	void UpdateActorSemanticTags(Vehicle &vehicle, std::map<uint8_t, uint8_t> &tagMap) {
+      _client.UpdateActorSemanticTags(vehicle.GetId(), tagMap);
+    }
 
     /// @}
     // =========================================================================

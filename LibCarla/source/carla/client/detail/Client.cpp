@@ -385,9 +385,9 @@ namespace detail {
     _pimpl->AsyncCall("set_actor_autopilot", vehicle, enabled);
   }
   
-  // void Client::SetActorSemanticTags(rpc::ActorId vehicle, const std::vector<uint8_t> tags) {
-    // _pimpl->AsyncCall("set_actor_autopilot", vehicle, tags);
-  // }
+  void Client::UpdateActorSemanticTags(rpc::ActorId vehicle, const std::map<uint8_t, uint8_t> &tagMap) {
+    _pimpl->AsyncCall("update_semantic_tags", vehicle, tagMap);
+  }
 
   void Client::ShowVehicleDebugTelemetry(rpc::ActorId vehicle, const bool enabled) {
     _pimpl->AsyncCall("show_vehicle_debug_telemetry", vehicle, enabled);
