@@ -50,7 +50,6 @@ public:
 
   virtual ~FCarlaActor() {};
 
-
   bool IsInValid() const
   {
     return (carla::rpc::ActorState::Invalid == State);

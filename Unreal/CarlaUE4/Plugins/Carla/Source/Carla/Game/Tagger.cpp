@@ -100,7 +100,7 @@ void ATagger::UpdateTags(const AActor &Actor, const std::map<uint8_t, uint8_t> &
   Actor.GetComponents<UStaticMeshComponent>(StaticMeshComponents);
   for (UStaticMeshComponent *Component : StaticMeshComponents) {
     uint8_t oldLabel = Component->CustomDepthStencilValue;
-	uint8_t newLabel = tagMap[oldLabel];
+	crp::CityObjectLabel newLabel = static_cast<crp::CityObjectLabel>(tagMap.at(oldLabel));
     SetStencilValue(*Component, newLabel, true);
   }
   // Iterate skeletal meshes.
@@ -108,11 +108,10 @@ void ATagger::UpdateTags(const AActor &Actor, const std::map<uint8_t, uint8_t> &
   Actor.GetComponents<USkeletalMeshComponent>(SkeletalMeshComponents);
   for (USkeletalMeshComponent *Component : SkeletalMeshComponents) {
     uint8_t oldLabel = Component->CustomDepthStencilValue;
-	uint8_t newLabel = tagMap[oldLabel];
+	crp::CityObjectLabel newLabel = static_cast<crp::CityObjectLabel>(tagMap.at(oldLabel));
     SetStencilValue(*Component, newLabel, true);
   }
 }
-
 
 void ATagger::TagActorsInLevel(UWorld &World, bool bTagForSemanticSegmentation)
 {
