@@ -20,13 +20,13 @@ namespace rpc {
   WP WP::MidRainyNoon    = {    60.0f,   60.0f,    60.0f,    60.0f,    -1.0f,     45.0f,     3.0f,     0.75f,     0.1f,    0.0f,   1.0f,   0.03f,   0.0331f};
   WP WP::HardRainNoon    = {   100.0f,  100.0f,    90.0f,    100.0f,   -1.0f,     45.0f,     7.0f,     0.75f,     0.1f,    0.0f,   1.0f,   0.03f,   0.0331f};
   WP WP::SoftRainNoon    = {    20.0f,   30.0f,    50.0f,    30.0f,    -1.0f,     45.0f,     3.0f,     0.75f,     0.1f,    0.0f,   1.0f,   0.03f,   0.0331f};
-  WP WP::ClearSunset     = {     5.0f,    0.0f,     0.0f,    10.0f,    -1.0f,     15.0f,     2.0f,     0.75f,     0.1f,    0.0f,   1.0f,   0.03f,   0.0331f};
-  WP WP::CloudySunset    = {    60.0f,    0.0f,     0.0f,    10.0f,    -1.0f,     15.0f,     3.0f,     0.75f,     0.1f,    0.0f,   1.0f,   0.03f,   0.0331f};
-  WP WP::WetSunset       = {     5.0f,    0.0f,    50.0f,    10.0f,    -1.0f,     15.0f,     2.0f,     0.75f,     0.1f,    0.0f,   1.0f,   0.03f,   0.0331f};
-  WP WP::WetCloudySunset = {    60.0f,    0.0f,    50.0f,    10.0f,    -1.0f,     15.0f,     2.0f,     0.75f,     0.1f,    0.0f,   1.0f,   0.03f,   0.0331f};
-  WP WP::MidRainSunset   = {    60.0f,   60.0f,    60.0f,    60.0f,    -1.0f,     15.0f,     3.0f,     0.75f,     0.1f,    0.0f,   1.0f,   0.03f,   0.0331f};
-  WP WP::HardRainSunset  = {   100.0f,  100.0f,    90.0f,    100.0f,   -1.0f,     15.0f,     7.0f,     0.75f,     0.1f,    0.0f,   1.0f,   0.03f,   0.0331f};
-  WP WP::SoftRainSunset  = {    20.0f,   30.0f,    50.0f,    30.0f,    -1.0f,     15.0f,     2.0f,     0.75f,     0.1f,    0.0f,   1.0f,   0.03f,   0.0331f};
+  WP WP::ClearSunset     = {     5.0f,    0.0f,     0.0f,    10.0f,    -1.0f,     5.0f,     2.0f,     0.75f,     0.1f,    0.0f,   1.0f,   0.03f,   0.0331f};
+  WP WP::CloudySunset    = {    60.0f,    0.0f,     0.0f,    10.0f,    -1.0f,     5.0f,     3.0f,     0.75f,     0.1f,    0.0f,   1.0f,   0.03f,   0.0331f};
+  WP WP::WetSunset       = {     5.0f,    0.0f,    50.0f,    10.0f,    -1.0f,     5.0f,     2.0f,     0.75f,     0.1f,    0.0f,   1.0f,   0.03f,   0.0331f};
+  WP WP::WetCloudySunset = {    60.0f,    0.0f,    50.0f,    10.0f,    -1.0f,     5.0f,     2.0f,     0.75f,     0.1f,    0.0f,   1.0f,   0.03f,   0.0331f};
+  WP WP::MidRainSunset   = {    60.0f,   60.0f,    60.0f,    60.0f,    -1.0f,     5.0f,     3.0f,     0.75f,     0.1f,    0.0f,   1.0f,   0.03f,   0.0331f};
+  WP WP::HardRainSunset  = {   100.0f,  100.0f,    90.0f,    100.0f,   -1.0f,     5.0f,     7.0f,     0.75f,     0.1f,    0.0f,   1.0f,   0.03f,   0.0331f};
+  WP WP::SoftRainSunset  = {    20.0f,   30.0f,    50.0f,    30.0f,    -1.0f,     5.0f,     2.0f,     0.75f,     0.1f,    0.0f,   1.0f,   0.03f,   0.0331f};
   WP WP::ClearNight      = {     5.0f,    0.0f,     0.0f,    10.0f,    -1.0f,    -90.0f,    60.0f,     75.0f,     1.0f,    0.0f,   1.0f,   0.03f,   0.0331f};
   WP WP::CloudyNight     = {    60.0f,    0.0f,     0.0f,    10.0f,    -1.0f,    -90.0f,    60.0f,     0.75f,     0.1f,    0.0f,   1.0f,   0.03f,   0.0331f};
   WP WP::WetNight        = {     5.0f,    0.0f,    50.0f,    10.0f,    -1.0f,    -90.0f,    60.0f,     75.0f,     1.0f,   60.0f,   1.0f,   0.03f,   0.0331f};
@@ -34,6 +34,11 @@ namespace rpc {
   WP WP::SoftRainNight   = {    60.0f,   30.0f,    50.0f,    30.0f,    -1.0f,    -90.0f,    60.0f,     0.75f,     0.1f,   60.0f,   1.0f,   0.03f,   0.0331f};
   WP WP::MidRainyNight   = {    80.0f,   60.0f,    60.0f,    60.0f,    -1.0f,    -90.0f,    60.0f,     0.75f,     0.1f,   80.0f,   1.0f,   0.03f,   0.0331f};
   WP WP::HardRainNight   = {   100.0f,  100.0f,    90.0f,    100.0f,   -1.0f,    -90.0f,   100.0f,     0.75f,     0.1f,  100.0f,   1.0f,   0.03f,   0.0331f};
-
+  WP WP::MidFoggyNoon	 = {	60.0f,    0.0f,     0.0f,    0.0f,     -1.0f,     45.0f,    30.0f,     0.75f,     0.1f,    0.0f,   1.0f,   0.03f,   0.0331f};
+  WP WP::HardFoggyNoon	 = {   100.0f,    0.0f,     0.0f,    0.0f,     -1.0f,     45.0f,   100.0f,     0.75f,     0.1f,    0.0f,   1.0f,   0.03f,   0.0331f};
+  WP WP::MidFoggySunset	 = {    60.0f,    0.0f,     0.0f,    0.0f,     -1.0f,      5.0f,    30.0f,     0.75f,     0.1f,    0.0f,   1.0f,   0.03f,   0.0331f};
+  WP WP::HardFoggySunset = {   100.0f,    0.0f,     0.0f,    0.0f,     -1.0f,      5.0f,   100.0f,     0.75f,     0.1f,    0.0f,   1.0f,   0.03f,   0.0331f};
+  WP WP::MidFoggyNight   = {    60.0f,    0.0f,     0.0f,    0.0f,     -1.0f,    -90.0f,    30.0f,     75.0f,     1.0f,    0.0f,   1.0f,   0.03f,   0.0331f};
+  WP WP::HardFoggyNight	 = {   100.0f,    0.0f,     0.0f,    0.0f,     -1.0f,    -90.0f,   100.0f,      0.75f,    0.1f,    0.0f,   1.0f,   0.03f,   0.0331f};
 } // namespace rpc
 } // namespace carla
