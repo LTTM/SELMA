@@ -37,6 +37,8 @@ public:
   /// objects having this value active.
   static void TagActor(const AActor &Actor, bool bTagForSemanticSegmentation);
 
+  /// Overwrites old actor tags depending on the passed std::map (old_label->new_label)
+  static void UpdateTags(const AActor *Actor, const std::map<uint8_t, uint8_t> &tagMap);
 
   /// Set the tag of every actor in level.
   ///

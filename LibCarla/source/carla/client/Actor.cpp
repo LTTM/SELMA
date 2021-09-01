@@ -32,6 +32,10 @@ namespace client {
     return GetEpisode().Lock()->GetActorAcceleration(*this);
   }
 
+  void Actor::UpdateSemanticTags(const std::map<uint8_t, uint8_t> &tagMap) {
+    GetEpisode().Lock()->UpdateActorSemanticTags(*this, tagMap);
+  }
+
   void Actor::SetLocation(const geom::Location &location) {
     GetEpisode().Lock()->SetActorLocation(*this, location);
   }

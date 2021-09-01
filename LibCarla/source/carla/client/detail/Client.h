@@ -217,6 +217,9 @@ namespace detail {
     void SetActorAutopilot(
         rpc::ActorId vehicle,
         bool enabled);
+		
+	// 
+	void UpdateActorSemanticTags(rpc::ActorId vehicle, const std::map<uint8_t, uint8_t> &tagMap);
 
     void ShowVehicleDebugTelemetry(
         rpc::ActorId vehicle,

@@ -39,9 +39,59 @@ boost::python::list StdVectorToPyList(const std::vector<T> &vec) {
   return l;
 }
 
+template<class TK1, class TK2, class TV1, class TV2>
+std::map<TK1,TV1> PyDictToMap(const boost::python::dict &dict) {
+  boost::python::list items = dict.items();
+  std::map<TK1,TV1> outMap;
+  for(int i=0; i<len(items); i++){
+    TK1 k = boost::python::extract<TK2>(items[i][0]);
+	TV1 v = boost::python::extract<TV2>(items[i][1]);
+	outMap[k] = v;
+	//outMap.insert(std::pair<TK1,TV1>(k,v));
+  }
+  return outMap;
+}
+
 static boost::python::list GetSemanticTags(const carla::client::Actor &self) {
   const std::vector<uint8_t> &tags = self.GetSemanticTags();
   return StdVectorToPyList(tags);
+}
+
+// boost::python::list SetSemanticTags(carla::client::Actor &self, const boost::python::list &tags) {
+  // std::vector<uint8_t> v_tags = std::vector<uint8_t>(len(tags)); 
+  // for(int i=0; i<len(tags); i++){
+	// v_tags[i] = boost::python::extract<int>(tags[i]);
+  // }
+  // //carla::client::Actor::SetSemanticTags(v_tags)
+  // std::vector<uint8_t> o_tags = self.SetSemanticTags(v_tags);
+  // return StdVectorToPyList(o_tags);
+// }
+
+// boost::python::list UpdateSemanticTags(carla::client::Actor &self, const boost::python::dict &tags) {
+  // const std::vector<uint8_t> &old_tags = self.GetSemanticTags();
+  // std::map<uint8_t, uint8_t> tagMap = PyDictToMap<uint8_t, int, uint8_t, int>(tags);
+  
+  // std::vector<uint8_t> new_tags(old_tags.size());
+  // for(int i=0; i<old_tags.size(); i++){
+	// new_tags[i] = tagMap[old_tags[i]];
+  // }
+  // //carla::client::Actor::SetSemanticTags(v_tags)
+  // std::vector<uint8_t> o_tags = self.SetSemanticTags(new_tags);
+  // return StdVectorToPyList(o_tags);
+// }
+
+boost::python::list UpdateSemanticTags(carla::client::Actor &self, const boost::python::dict &tags) {
+  const std::vector<uint8_t> &old_tags = self.GetSemanticTags();
+  std::map<uint8_t, uint8_t> tagMap = PyDictToMap<uint8_t, int, uint8_t, int>(tags);
+  
+  self.UpdateSemanticTags(tagMap);
+  
+  std::vector<uint8_t> new_tags(old_tags.size());
+  for(int i=0; i<old_tags.size(); i++){
+	new_tags[i] = tagMap[old_tags[i]];
+  }
+  std::vector<uint8_t> o_tags = self.SetSemanticTags(new_tags);
+  return StdVectorToPyList(o_tags);
 }
 
 static void AddActorImpulse(carla::client::Actor &self,
@@ -107,6 +157,7 @@ void export_actor() {
         return attribute_dict;
       })
       .add_property("bounding_box", CALL_RETURNING_COPY(cc::Actor, GetBoundingBox))
+	  .def("update_semantic_tags", &UpdateSemanticTags, (arg("tags")))
       .def("get_world", CALL_RETURNING_COPY(cc::Actor, GetWorld))
       .def("get_location", &cc::Actor::GetLocation)
       .def("get_transform", &cc::Actor::GetTransform)
