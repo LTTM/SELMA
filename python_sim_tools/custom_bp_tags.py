@@ -1,3 +1,20 @@
+import glob
+import os
+import sys
+
+try:
+    cpath = '../PreCompiled/PythonAPI/carla/dist/carla-*%d.%d-%s.egg' % (
+        sys.version_info.major,
+        sys.version_info.minor,
+        'win-amd64' if os.name == 'nt' else 'linux-x86_64')
+    sys.path.append(glob.glob(cpath)[0])
+except IndexError:
+    raise ValueError("carla not found", cpath)
+
+import carla
+import random
+
+
 cars =   [
             'vehicle.audi.a2',
             'vehicle.nissan.micra',
@@ -55,6 +72,8 @@ bikes =  [
          ]
 
 
+joined = cars+busses+trucks+mbikes+bikes
+
 
 def custom_tag(bp):
     # extract blueprint id (string)
@@ -77,11 +96,23 @@ def custom_tag(bp):
     if bp_id in bikes:
         return {4:41, 10:105} # pedestrian->rider, vehicle->bicycle
 
-
-
-    
-    
     return None
+
+def override_parked_vehicles(world):
+    parked_objs = world.get_environment_objects(carla.CityObjectLabel.Vehicles)
+    trs = [carla.Transform(obj.bounding_box.location, obj.bounding_box.rotation) for obj in parked_objs]
+    world.unload_map_layer(carla.MapLayer.ParkedVehicles)
+    blueprint_library = world.get_blueprint_library()
+    for tr in trs:
+        tr.location.z += .1
+        bp = blueprint_library.filter(random.choice(joined))[0]
+        tags_dict = custom_tag(bp)
+        try:
+            v = world.spawn_actor(bp, tr)
+            if tags_dict is not None:
+                v.update_semantic_tags(tags_dict)
+        except RuntimeError:
+            pass
     
 """
 Classes:
