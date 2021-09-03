@@ -3,7 +3,7 @@ import os
 import sys
 
 try:
-    cpath = '../PreCompiled/PythonAPI/carla/dist/carla-*%d.%d-%s.egg' % (
+    cpath = '../carla/dist/carla-*%d.%d-%s.egg' % (
         sys.version_info.major,
         sys.version_info.minor,
         'win-amd64' if os.name == 'nt' else 'linux-x86_64')
@@ -104,7 +104,7 @@ def override_parked_vehicles(world):
     world.unload_map_layer(carla.MapLayer.ParkedVehicles)
     blueprint_library = world.get_blueprint_library()
     for tr in trs:
-        tr.location.z += .1
+        tr.location.z += .5
         bp = blueprint_library.filter(random.choice(joined))[0]
         tags_dict = custom_tag(bp)
         try:
