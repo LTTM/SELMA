@@ -22,7 +22,7 @@ static void SetTimeout(carla::client::Client &client, double seconds) {
 }
 
 static auto GetAvailableMaps(const carla::client::Client &self) {
-  carla::PythonUtil::ReleaseGIL unlock;
+  //carla::PythonUtil::ReleaseGIL unlock;
   boost::python::list result;
   for (const auto &str : self.GetAvailableMaps()) {
     result.append(str);

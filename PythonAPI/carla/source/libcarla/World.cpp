@@ -268,7 +268,7 @@ void export_world() {
     .def("get_blueprint_library", CONST_CALL_WITHOUT_GIL(cc::World, GetBlueprintLibrary))
     .def("get_vehicles_light_states", &GetVehiclesLightStates)
     .def("get_map", CONST_CALL_WITHOUT_GIL(cc::World, GetMap))
-    .def("get_random_location_from_navigation", CALL_RETURNING_OPTIONAL_WITHOUT_GIL(cc::World, GetRandomLocationFromNavigation))
+    .def("get_random_location_from_navigation", CALL_RETURNING_OPTIONAL(cc::World, GetRandomLocationFromNavigation))//.def("get_random_location_from_navigation", CALL_RETURNING_OPTIONAL_WITHOUT_GIL(cc::World, GetRandomLocationFromNavigation))
     .def("get_spectator", CONST_CALL_WITHOUT_GIL(cc::World, GetSpectator))
     .def("get_settings", CONST_CALL_WITHOUT_GIL(cc::World, GetSettings))
     .def("apply_settings", &ApplySettings, (arg("settings"), arg("seconds")=0.0))

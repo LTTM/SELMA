@@ -91,4 +91,10 @@ void export_weather() {
   cls.attr("SoftRainNight") = cr::WeatherParameters::SoftRainNight;
   cls.attr("MidRainyNight") = cr::WeatherParameters::MidRainyNight;
   cls.attr("HardRainNight") = cr::WeatherParameters::HardRainNight;
+  cls.attr("MidFoggyNoon") = cr::WeatherParameters::MidFoggyNoon;
+  cls.attr("HardFoggyNoon") = cr::WeatherParameters::HardFoggyNoon;
+  cls.attr("MidFoggySunset") = cr::WeatherParameters::MidFoggySunset;
+  cls.attr("HardFoggySunset") = cr::WeatherParameters::HardFoggySunset;
+  cls.attr("MidFoggyNight") = cr::WeatherParameters::MidFoggyNight;
+  cls.attr("HardFoggyNight") = cr::WeatherParameters::HardFoggyNight;
 }
