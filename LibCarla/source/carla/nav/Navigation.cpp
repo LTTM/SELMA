@@ -1059,6 +1059,7 @@ namespace nav {
     dtQueryFilter filter2;
     if (filter == nullptr) {
       filter2.setIncludeFlags(CARLA_TYPE_SIDEWALK);
+	  //filter2.setIncludeFlags(CARLA_TYPE_SIDEWALK | CARLA_TYPE_CROSSWALK); // added crosswalks
       filter2.setExcludeFlags(CARLA_TYPE_NONE);
       filter = &filter2;
     }
