@@ -199,7 +199,7 @@ void export_world() {
     .value("SpringArm", cr::AttachmentType::SpringArm)
   ;
 
-  enum_<cr::CityObjectLabel>("CityObjectLabel")
+enum_<cr::CityObjectLabel>("CityObjectLabel")
     .value("NONE", cr::CityObjectLabel::None)
     .value("Buildings", cr::CityObjectLabel::Buildings)
     .value("Fences", cr::CityObjectLabel::Fences)
@@ -224,6 +224,14 @@ void export_world() {
     .value("Water", cr::CityObjectLabel::Water)
     .value("Terrain", cr::CityObjectLabel::Terrain)
     .value("Any", cr::CityObjectLabel::Any)
+    .value("Persons", cr::CityObjectLabel::Persons)
+    .value("Riders", cr::CityObjectLabel::Riders)
+    .value("Cars", cr::CityObjectLabel::Cars)
+    .value("Trucks", cr::CityObjectLabel::Trucks)
+    .value("Busses", cr::CityObjectLabel::Busses)
+    .value("Trains", cr::CityObjectLabel::Trains)
+    .value("Motorcycles", cr::CityObjectLabel::Motorcycles)
+    .value("Bycicles", cr::CityObjectLabel::Bycicles)
   ;
 
   class_<cr::LabelledPoint>("LabelledPoint", no_init)

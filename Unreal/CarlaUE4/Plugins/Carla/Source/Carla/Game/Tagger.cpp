@@ -45,6 +45,13 @@ crp::CityObjectLabel ATagger::GetLabelByFolderName(const FString &String) {
   else if (String == "Dynamic")      return crp::CityObjectLabel::Dynamic;
   else if (String == "Water")        return crp::CityObjectLabel::Water;
   else if (String == "Terrain")      return crp::CityObjectLabel::Terrain;
+  else if (String == "Persons")     return crp::CityObjectLabel::Persons;
+  else if (String == "Riders")     return crp::CityObjectLabel::Riders;
+  else if (String == "Cars")     return crp::CityObjectLabel::Cars;
+  else if (String == "Trucks")     return crp::CityObjectLabel::Trucks;
+  else if (String == "Busses")     return crp::CityObjectLabel::Busses;
+  else if (String == "Trains")     return crp::CityObjectLabel::Trains;
+  else if (String == "Motorcycles")     return crp::CityObjectLabel::Motorcycles;
   else if (String == "Bycicles")     return crp::CityObjectLabel::Bycicles;
   else                               return crp::CityObjectLabel::None;
 }
@@ -170,6 +177,13 @@ FString ATagger::GetTagAsString(const crp::CityObjectLabel Label)
     CARLA_GET_LABEL_STR(Dynamic)
     CARLA_GET_LABEL_STR(Water)
     CARLA_GET_LABEL_STR(Terrain)
+	CARLA_GET_LABEL_STR(Persons)
+	CARLA_GET_LABEL_STR(Riders)
+	CARLA_GET_LABEL_STR(Cars)
+	CARLA_GET_LABEL_STR(Trucks)
+	CARLA_GET_LABEL_STR(Busses)
+	CARLA_GET_LABEL_STR(Trains)
+	CARLA_GET_LABEL_STR(Motorcycles)
 	CARLA_GET_LABEL_STR(Bycicles)
 #undef CARLA_GET_LABEL_STR
   }
