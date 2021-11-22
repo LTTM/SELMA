@@ -64,10 +64,24 @@ class BaseDataset(Dataset):
             #depth = cv.GaussianBlur(depth, (0,0), sigma) if depth is not None
         return rgb, gt, depth
 
+    def __getitem__(self, item):
+        rgb_path, gt_path = self.items[item]
+
+        rgb = self.load_rgb(path.join(self.root_path, rgb_path)) if if 'rgb' in self.sensors else None
+        gt = self.load_semantic(path.join(self.root_path, gt_path)) if 'semantic' in self.sensors else None
+
+        rgb, gt, _ = resize_and_crop(rgb=rgb, gt=gt)
+        rgb, gt, _ = data_augment(rgb=rgb, gt=gt)
+        # out_dict = {}
+        # out_dict['rgb']
+        # out_dict['semantic']
+
+        return out_dict, fname
+
     @staticmethod
     def to_pytorch(bgr, gt):
         bgr = np.transpose(bgr.astype(np.float32)-[104.00698793, 116.66876762, 122.6789143], (2, 0, 1))
-        return torch.from_numpy(bgr), torch.from_numpy(gt)
+        return torch.from_numpy(bgr), torch.from_numpy(gt.astype(np.long))
 
     @staticmethod
     def to_rgb(tensor):
