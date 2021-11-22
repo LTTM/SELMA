@@ -33,21 +33,21 @@ for t in towns:
     # val_slice = ways[train:train+val]
     # test_slice = ways[train+val:]
 
-    with open("train.txt", 'a') as f:
+    with open("train.csv", 'a') as f:
         f.write(','.join(header)+'\n')
         for w in train_slice:
             tod = npr.choice(tods, 1, p=[.5, .25, .25])[0]
             wea = npr.choice(weathers, 1, p=[.35, .035, .035, .2, .1, .1, .06, .06, .06])[0]
             f.write(','.join([t, tod, wea, w])+'\n')
             #f.write("Town%s_Opt "%t+w+'\n')
-    with open("val.txt", 'a') as f:
+    with open("val.csv", 'a') as f:
         f.write(','.join(header)+'\n')
         for w in val_slice:
             tod = npr.choice(tods, 1, p=[.5, .25, .25])[0]
             wea = npr.choice(weathers, 1, p=[.35, .035, .035, .2, .1, .1, .06, .06, .06])[0]
             f.write(','.join([t, tod, wea, w])+'\n')
             #f.write("Town%s_Opt "%t+w+'\n')
-    with open("test.txt", 'a') as f:
+    with open("test.csv", 'a') as f:
         f.write(','.join(header)+'\n')
         for w in test_slice:
             tod = npr.choice(tods, 1, p=[.5, .25, .25])[0]
