@@ -25,12 +25,16 @@ class BaseDataset(Dataset):
             self.items = [l.rstrip('\n').split(split_separator) for l in f]
 
         self.init_ids()
+        self.init_cmap()
 
     # to be overridden
     def init_ids(self):
         self.raw_to_train = {i:i for i in range(256)}
-        self.cmap = np.array([[i,i,i] for i in range(256)])
         self.ignore_index = -1
+
+    # to be overridden
+    def init_cmap(self):
+        self.cmap = np.array([[i,i,i] for i in range(256)])
 
     def resize_and_crop(self, rgb=None, gt=None, depth=None):
         if self.resize_to is not None:
@@ -72,16 +76,21 @@ class BaseDataset(Dataset):
 
         rgb, gt, _ = resize_and_crop(rgb=rgb, gt=gt)
         rgb, gt, _ = data_augment(rgb=rgb, gt=gt)
-        # out_dict = {}
-        # out_dict['rgb']
-        # out_dict['semantic']
+        rgb, gt, _ = to_pytorch(rgb=rgb, gt=gt)
 
-        return out_dict, fname
+        out_dict = {}
+        if rgb is not None: out_dict['rgb'] = rgb
+        if gt is not None: out_dict['semantic'] = gt
+        if depth is not None: out_dict['depth'] = depth
+
+        return out_dict, item
 
     @staticmethod
-    def to_pytorch(bgr, gt):
-        bgr = np.transpose(bgr.astype(np.float32)-[104.00698793, 116.66876762, 122.6789143], (2, 0, 1))
-        return torch.from_numpy(bgr), torch.from_numpy(gt.astype(np.long))
+    def to_pytorch(bgr=None, gt=None, depth=None):
+        if bgr is not None: bgr = torch.from_numpy(np.transpose(bgr-[104.00698793, 116.66876762, 122.6789143], (2, 0, 1)).astype(np.float32))
+        if gt is not None: torch.from_numpy(gt.astype(np.long))
+        if depth is not None: torch.from_numpy(gt.astype(np.float32))
+        return bgr, gt, depth
 
     @staticmethod
     def to_rgb(tensor):
@@ -99,6 +108,7 @@ class BaseDataset(Dataset):
         # image should be grayscale
         return cv.imread(im_path, cv.IMREAD_UNCHANGED)
 
+    # carla.
     @staticmethod
     def load_depth(im_path, rescale=True): # return the depth in meters
         t = cv.imread(im_path).astype(int)*np.array([256*256, 256, 1])
