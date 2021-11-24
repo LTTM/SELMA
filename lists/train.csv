@@ -1307,7 +1307,6 @@ Town,Time-of-Day,Weather,PositionID
 01,night,cloudy,4149949558330942233
 01,sunset,wet,14401004982104960567
 01,night,wet,2234299523818563578
-Town,Time-of-Day,Weather,PositionID
 02,noon,clear,16113022764149915564
 02,sunset,cloudy,356858600335447322
 02,sunset,wet,1361194328172897658
@@ -1914,7 +1913,6 @@ Town,Time-of-Day,Weather,PositionID
 02,noon,cloudy,1426644889823016905
 02,noon,cloudy,13317173821907905254
 02,night,clear,75146905978565591
-Town,Time-of-Day,Weather,PositionID
 03,noon,wet,1631857936556294759
 03,noon,clear,17041509170131750440
 03,noon,cloudy,18206964063374848549
@@ -4824,7 +4822,6 @@ Town,Time-of-Day,Weather,PositionID
 03,noon,midrain,5882889085240013660
 03,noon,softrain,2556818242327454069
 03,noon,clear,8137165277799063493
-Town,Time-of-Day,Weather,PositionID
 04,night,clear,16876883189440921088
 04,sunset,cloudy,6989981902932500674
 04,noon,wet,10833995403112227141
@@ -11678,7 +11675,6 @@ Town,Time-of-Day,Weather,PositionID
 04,noon,softrain,17198927754946004534
 04,sunset,wet,2562304710577897317
 04,noon,wet,12344576472882436095
-Town,Time-of-Day,Weather,PositionID
 05,noon,cloudy,9986020705319963460
 05,sunset,wet,8745227974729054607
 05,noon,cloudy,16343827630337103334
@@ -16679,7 +16675,6 @@ Town,Time-of-Day,Weather,PositionID
 05,night,clear,6955458542392702811
 05,noon,cloudy,12502555348408895802
 05,noon,wet,2386279395075785449
-Town,Time-of-Day,Weather,PositionID
 06,night,wet,16629798609275170003
 06,noon,clear,12951598719521254996
 06,noon,softrain,9371429442416919721
@@ -21945,7 +21940,6 @@ Town,Time-of-Day,Weather,PositionID
 06,noon,cloudy,7152192326508669480
 06,sunset,clear,2984404987486812146
 06,sunset,softrain,15943683803105871760
-Town,Time-of-Day,Weather,PositionID
 07,sunset,hardfog,4131516393781617696
 07,noon,clear,4566160356526773519
 07,noon,softrain,8119211653428194520
@@ -23484,7 +23478,6 @@ Town,Time-of-Day,Weather,PositionID
 07,noon,wetcloudy,13747181102181932663
 07,noon,hardrain,15968631347136732185
 07,sunset,hardrain,4729263785545676144
-Town,Time-of-Day,Weather,PositionID
 10HD,noon,clear,12879619834582218864
 10HD,night,clear,18158803140024901272
 10HD,night,cloudy,9457045239540980384

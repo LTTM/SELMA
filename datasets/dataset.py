@@ -72,7 +72,7 @@ class BaseDataset(Dataset):
     def __getitem__(self, item):
         rgb_path, gt_path = self.items[item]
 
-        rgb = self.load_rgb(path.join(self.root_path, rgb_path)) if if 'rgb' in self.sensors else None
+        rgb = self.load_rgb(path.join(self.root_path, rgb_path)) if 'rgb' in self.sensors else None
         gt = self.load_semantic(path.join(self.root_path, gt_path)) if 'semantic' in self.sensors else None
 
         rgb, gt, _ = resize_and_crop(rgb=rgb, gt=gt)
@@ -85,6 +85,9 @@ class BaseDataset(Dataset):
         if depth is not None: out_dict['depth'] = depth
 
         return out_dict, item
+
+    def __len__(self):
+        return len(self.items)
 
     @staticmethod
     def to_pytorch(bgr=None, gt=None, depth=None):
