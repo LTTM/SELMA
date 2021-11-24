@@ -1,3 +1,5 @@
+from os import path
+
 from datasets.cityscapes import CityDataset
 
 class LTTMDataset(CityDataset):
@@ -8,12 +10,15 @@ class LTTMDataset(CityDataset):
                  town=None,
                  weather=None,
                  time_of_day=None,
+                 sensor_positions=["D"],
                  **kwargs): # whether to use city19 or city36 class set
 
         super(LTTMDataset, self).__init__(split_extension=split_extension,
                                           split_separator=split_separator,
                                           split_skiplines=split_skiplines,
                                           **kwargs)
+
+        self.sensor_positions = sensor_positions
 
         if town is not None:
             self.items = [[town, e[1], e[2], e[3]] for e in self.items]
@@ -24,26 +29,46 @@ class LTTMDataset(CityDataset):
         if time_of_day is not None:
             self.items = [[e[0], e[1], time_of_day, e[3]] for e in self.items]
 
-        self.towns_map    = {"01":        "Town01_Opt",
-                             "02":        "Town02_Opt",
-                             "03":        "Town03_Opt",
-                             "04":        "Town04_Opt",
-                             "05":        "Town05_Opt",
-                             "06":        "Town06_Opt",
-                             "07":        "Town07_Opt",
-                             "10HD":      "Town10HD_Opt"}
-        self.tods_map     = {"noon":      "Noon",
-                             "night":     "Night",
-                             "sunset":    "Sunset"}
-        self.weathers_map = {"clear":     "Clear",
-                             "wet":       "Wet",
-                             "cloudy":    "Cloudy",
-                             "wetcloudy": "WetCloudy",
-                             "softrain":  "SoftRain",
-                             "midrain":   "MidRain",
-                             "hardrain":  "HardRain",
-                             "midfog":    "MidFog",
-                             "hardfog":   "HardFog"}
+        self.towns_map      = {"01":        "Town01_Opt",
+                               "02":        "Town02_Opt",
+                               "03":        "Town03_Opt",
+                               "04":        "Town04_Opt",
+                               "05":        "Town05_Opt",
+                               "06":        "Town06_Opt",
+                               "07":        "Town07_Opt",
+                               "10HD":      "Town10HD_Opt"}
+        self.tods_map       = {"noon":      "Noon",
+                               "night":     "Night",
+                               "sunset":    "Sunset"}
+        self.weathers_map   = {"clear":     "Clear",
+                               "wet":       "Wet",
+                               "cloudy":    "Cloudy",
+                               "wetcloudy": "WetCloudy",
+                               "softrain":  "SoftRain",
+                               "midrain":   "MidRain",
+                               "hardrain":  "HardRain",
+                               "midfog":    "MidFog",
+                               "hardfog":   "HardFog"}
+        self.sensor_map     = {"rgb":       "CAM",
+                               "semantic":  "SEGCAM",
+                               "depth":     "DEPTHCAM",
+                               "lidar":     "LIDAR",
+                               "bbox":      "BBOX_LABELS"}
+        self.file_ext       = {"rgb":       "jpg",
+                               "semantic":  "png",
+                               "depth":     "png",
+                               "lidar":     "ply",
+                               "bbox":      "json"}
+        self.position_cam   = {"D":         "_DESK",
+                               "F":         "_FRONT",
+                               "FL":        "_FRONT_LEFT",
+                               "FR":        "_FRONT_RIGHT",
+                               "L":         "_LEFT",
+                               "R":         "_RIGHT",
+                               "B":         "_BACK"}
+        self.position_lidar = {"T":         "_TOP",
+                               "LL":        "_FRONT_LEFT",
+                               "LR":        "_FRONT_RIGHT"}
 
     def init_ids(self):
         self.raw_to_train = {-1:-1, 0:-1, 1:2, 2:4, 3:-1, 4:-1, 5:5, 6:0, 7:0, 8:1, 9:8, 10:-1,
@@ -55,10 +80,22 @@ class LTTMDataset(CityDataset):
     def __getitem__(self, item):
         town, tod, weather, waypoint = self.items[item]
         folder = self.towns_map[town]+"_"+self.weathers_map[weather]+self.tods_map[tod]
+        wpath = path.join(self.root_path, folder, "%s%s", folder+"_"+waypoint+".%s")
 
-        print(folder)
+        for sensor in self.sensors:
+            if sensor == "bbox":
+                print(wpath%(self.sensor_map[sensor], "", self.file_ext[sensor]))
+            else:
+                for position in self.sensor_positions:
+                    if sensor == "lidar":
+                        if position in self.position_lidar:
+                            print(wpath%(self.sensor_map[sensor], self.position_lidar[position], self.file_ext[sensor]))
+                    else:
+                        if position in self.position_cam:
+                            print(wpath%(self.sensor_map[sensor], self.position_cam[position], self.file_ext[sensor]))
 
-        # path =
+
+
         # rgb = self.load_rgb(path.join(self.root_path, rgb_path)) if if 'rgb' in self.sensors else None
         # gt = self.load_semantic(path.join(self.root_path, gt_path)) if 'semantic' in self.sensors else None
         #

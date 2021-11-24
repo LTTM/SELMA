@@ -8,6 +8,7 @@ from os import path, listdir
 class BaseDataset(Dataset):
     def __init__(self,
                  root_path=None,
+                 splits_path=None,
                  split='train',
                  split_extension='txt',
                  split_separator=' ',
@@ -22,7 +23,7 @@ class BaseDataset(Dataset):
         self.resize_to = resize_to
         self.crop_to = crop_to
 
-        with open(path.join(root_path,split+'.'+split_extension)) as f:
+        with open(path.join(splits_path, split+'.'+split_extension)) as f:
             self.items = [l.rstrip('\n').split(split_separator) for l in f][split_skiplines:]
 
         self.init_ids()
