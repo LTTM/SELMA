@@ -104,12 +104,12 @@ class BaseDataset(Dataset):
         return t
 
     @staticmethod
-    def read_im(im_path):
+    def load_im(im_path):
         # image is read in bgr
         return cv.imread(im_path)
 
     @staticmethod
-    def read_gt(im_path):
+    def load_gt(im_path):
         # image should be grayscale
         return cv.imread(im_path, cv.IMREAD_UNCHANGED)
 

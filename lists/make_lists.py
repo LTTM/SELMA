@@ -33,14 +33,6 @@ for t in towns:
     train_slice = ways[:-2*testval]
     val_slice = ways[-2*testval:-testval]
     test_slice = ways[-testval:]
-    # tot = len(ways)
-    # train = int(tot*.8)
-    # test = int(tot*.1)
-    # val = tot-train-test
-    #
-    # train_slice = ways[0:train]
-    # val_slice = ways[train:train+val]
-    # test_slice = ways[train+val:]
 
     with open("train.csv", 'a') as f:
         for w in train_slice:
