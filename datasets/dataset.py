@@ -11,6 +11,7 @@ class BaseDataset(Dataset):
                  split='train',
                  split_extension='txt',
                  split_separator=' ',
+                 split_skiplines=0,
                  resize_to=None,
                  crop_to=None,
                  sensors=['rgb'],
@@ -22,7 +23,7 @@ class BaseDataset(Dataset):
         self.crop_to = crop_to
 
         with open(path.join(root_path,split+'.'+split_extension)) as f:
-            self.items = [l.rstrip('\n').split(split_separator) for l in f]
+            self.items = [l.rstrip('\n').split(split_separator) for l in f][split_skiplines:]
 
         self.init_ids()
         self.init_cmap()

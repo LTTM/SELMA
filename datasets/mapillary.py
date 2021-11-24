@@ -1,6 +1,6 @@
 from datasets.cityscapes import CityDataset
 
-class MapillaryDataset(GTAVDataset):
+class MapillaryDataset(CityDataset):
     def init_ids(self):
         self.raw_to_train = {0:-1, 1:-1, 2:-1, 3:4, 4:-1, 5:-1, 6:3, 7:0, 8:0, 9:-1, 10:-1, 11:-1, 12:-1,
                              13:0, 14:0, 15:1, 16:-1, 17:2, 18:-1, 19:11, 20:12, 21:12, 22:12, 23:0, 24:0,

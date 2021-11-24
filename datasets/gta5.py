@@ -1,5 +1,4 @@
 from PIL import Image
-
 from datasets.cityscapes import CityDataset
 
 class GTAVDataset(CityDataset):
