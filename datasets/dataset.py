@@ -22,6 +22,7 @@ class BaseDataset(Dataset):
         self.sensors = sensors
         self.resize_to = resize_to
         self.crop_to = crop_to
+        self.kwargs = kwargs
 
         with open(path.join(splits_path, split+'.'+split_extension)) as f:
             self.items = [l.rstrip('\n').split(split_separator) for l in f][split_skiplines:]
@@ -44,17 +45,17 @@ class BaseDataset(Dataset):
             if gt is not None: gt = cv.resize(gt, self.resize_to, interpolation=cv.INTER_NEAREST_EXACT) # labels must be mapped as-is
             if depth is not None: depth = cv.resize(depth, self.resize_to, interpolation=cv.INTER_NEAREST_EXACT)
 
-        if self.crop_size is not None:
+        if self.crop_to is not None:
             if rgb is not None: H, W, _ = rgb.shape
             if gt is not None: H, W = gt.shape
             if depth is not None: H, W = depth.shape
             if not (rgb is None and gt is None and depth is None):
-                dh, dw = H-self.crop_size[1], W-self.crop_size[0]
-                assert dh>=0 and dw >= 0, "Incompatible crop size: (%d, %d), images have dimensions: (%d, %d)"%(self.crop_size[0], self.crop_size[1], W, H)
+                dh, dw = H-self.crop_to[1], W-self.crop_to[0]
+                assert dh>=0 and dw >= 0, "Incompatible crop size: (%d, %d), images have dimensions: (%d, %d)"%(self.crop_to[0], self.crop_to[1], W, H)
                 h0, w0 = random.randint(0, dh) if dh>0 else 0, random.randint(0, dw) if dw>0 else 0
-            if rgb is not None: rgb = (rgb[h0:h0+self.crop_size[1], w0:w0+self.crop_size[0], ...]).copy()
-            if gt is not None: gt = (gt[h0:h0+self.crop_size[1], w0:w0+self.crop_size[0], ...]).copy()
-            if depth is not None: depth = (depth[h0:h0+self.crop_size[1], w0:w0+self.crop_size[0], ...]).copy()
+            if rgb is not None: rgb = (rgb[h0:h0+self.crop_to[1], w0:w0+self.crop_to[0], ...]).copy()
+            if gt is not None: gt = (gt[h0:h0+self.crop_to[1], w0:w0+self.crop_to[0], ...]).copy()
+            if depth is not None: depth = (depth[h0:h0+self.crop_to[1], w0:w0+self.crop_to[0], ...]).copy()
 
         return rgb, gt, depth
 
@@ -76,9 +77,9 @@ class BaseDataset(Dataset):
         rgb = self.load_rgb(path.join(self.root_path, rgb_path)) if 'rgb' in self.sensors else None
         gt = self.load_semantic(path.join(self.root_path, gt_path)) if 'semantic' in self.sensors else None
 
-        rgb, gt, _ = resize_and_crop(rgb=rgb, gt=gt)
-        rgb, gt, _ = data_augment(rgb=rgb, gt=gt)
-        rgb, gt, _ = to_pytorch(rgb=rgb, gt=gt)
+        rgb, gt, _ = self.resize_and_crop(rgb=rgb, gt=gt)
+        rgb, gt, _ = self.data_augment(rgb=rgb, gt=gt)
+        rgb, gt, _ = self.to_pytorch(rgb=rgb, gt=gt)
 
         out_dict = {}
         if rgb is not None: out_dict['rgb'] = rgb
@@ -91,11 +92,11 @@ class BaseDataset(Dataset):
         return len(self.items)
 
     @staticmethod
-    def to_pytorch(bgr=None, gt=None, depth=None):
-        if bgr is not None: bgr = torch.from_numpy(np.transpose(bgr-[104.00698793, 116.66876762, 122.6789143], (2, 0, 1)).astype(np.float32))
+    def to_pytorch(rgb=None, gt=None, depth=None):
+        if rgb is not None: rgb = torch.from_numpy(np.transpose(rgb-[104.00698793, 116.66876762, 122.6789143], (2, 0, 1)).astype(np.float32))
         if gt is not None: torch.from_numpy(gt.astype(np.long))
         if depth is not None: torch.from_numpy(gt.astype(np.float32))
-        return bgr, gt, depth
+        return rgb, gt, depth
 
     @staticmethod
     def to_rgb(tensor):
@@ -104,12 +105,12 @@ class BaseDataset(Dataset):
         return t
 
     @staticmethod
-    def load_im(im_path):
+    def load_rgb(im_path):
         # image is read in bgr
         return cv.imread(im_path)
 
     @staticmethod
-    def load_gt(im_path):
+    def load_semantic(im_path):
         # image should be grayscale
         return cv.imread(im_path, cv.IMREAD_UNCHANGED)
 

@@ -1,5 +1,6 @@
 import json
 from os import path
+import numpy as np
 from plyfile import PlyData
 from datasets.cityscapes import CityDataset
 
@@ -83,7 +84,7 @@ class LTTMDataset(CityDataset):
         folder = self.towns_map[town]+"_"+self.weathers_map[weather]+self.tods_map[tod]
         wpath = path.join(self.root_path, folder, "%s%s", folder+"_"+waypoint+".%s")
 
-        out_dict = {sensor:{} for sensor in sensors}
+        out_dict = {sensor:{} for sensor in self.sensors}
 
         for sensor in self.sensors:
             if sensor == "bbox":
@@ -94,7 +95,9 @@ class LTTMDataset(CityDataset):
                 for position in self.sensor_positions:
                     if sensor == "lidar":
                         if position in self.position_lidar:
-                            shift = 0. if p == 'T' else [-2.45, -.85, .95] if p == 'LL' else [-2.45, .85, .95]
+                            shift = 0. if position == 'T' else \
+                                [-2.45, -.85, .95] if position == 'LL' else \
+                                    [-2.45, .85, .95]
                             out_dict[sensor][position] = self.load_lidar(
                                 wpath%(self.sensor_map[sensor],
                                        self.position_lidar[position],
@@ -110,31 +113,31 @@ class LTTMDataset(CityDataset):
                                        self.file_ext[sensor])
                                 )
 
-        poss = out_dict["rgb"].keys() if 'rgb' in out_dict else
-                out_dict["semantic"].keys() if 'semantic' in out_dict else
+        poss = out_dict["rgb"].keys() if 'rgb' in out_dict else \
+                out_dict["semantic"].keys() if 'semantic' in out_dict else \
                   out_dict["depth"].keys() if 'depth' in out_dict else []
 
         for pos in poss:
             rgb = out_dict['rgb'][pos] if 'rgb' in out_dict else None
-            rgb = out_dict['gt'][pos] if 'gt' in out_dict else None
-            rgb = out_dict['depth'][pos] if 'depth' in out_dict else None
+            gt = out_dict['semantic'][pos] if 'gt' in out_dict else None
+            depth = out_dict['depth'][pos] if 'depth' in out_dict else None
 
-            rgb, gt, depth = resize_and_crop(rgb=rgb, gt=gt, depth=depth)
-            rgb, gt, depth = data_augment(rgb=rgb, gt=gt, depth=depth)
-            rgb, gt, depth = to_pytorch(rgb=rgb, gt=gt, depth=depth)
+            rgb, gt, depth = self.resize_and_crop(rgb=rgb, gt=gt, depth=depth)
+            rgb, gt, depth = self.data_augment(rgb=rgb, gt=gt, depth=depth)
+            rgb, gt, depth = self.to_pytorch(rgb=rgb, gt=gt, depth=depth)
 
             if rgb is not None: out_dict['rgb'][pos] = rgb
-            if gt is not None: out_dict['gt'][pos] = rgb
-            if depth is not None: out_dict['depth'][pos] = rgb
+            if gt is not None: out_dict['gt'][pos] = gt
+            if depth is not None: out_dict['depth'][pos] = depth
 
         return out_dict, item
 
 
-def load_lidar(self, path, xyz_shift=0.):
-    data = PlyData.read(path)
-    xyz = np.array([[x,y,z] for x,y,z,_,_ in data['vertex']])+xyz_shift
-    l = np.array([l for _,_,_,_,l in data['vertex']])
-    mapped = self.ignore_index*np.ones_like(l, dtype=int)
-    for k,v in self.raw_to_train.items():
-        mapped[l==k] = v
-    return (xyz, mapped)
+    def load_lidar(self, path, xyz_shift=0.):
+        data = PlyData.read(path)
+        xyz = np.array([[x,y,z] for x,y,z,_,_ in data['vertex']])+xyz_shift
+        l = np.array([l for _,_,_,_,l in data['vertex']])
+        mapped = self.ignore_index*np.ones_like(l, dtype=int)
+        for k,v in self.raw_to_train.items():
+            mapped[l==k] = v
+        return (xyz, mapped)
