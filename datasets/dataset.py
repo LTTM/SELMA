@@ -15,6 +15,7 @@ class BaseDataset(Dataset):
                  split_skiplines=0,
                  resize_to=None,
                  crop_to=None,
+                 augment_data=True,
                  sensors=['rgb'],
                  **kwargs): # whether to use city19 or city36 class set
 
@@ -23,12 +24,14 @@ class BaseDataset(Dataset):
         self.resize_to = resize_to
         self.crop_to = crop_to
         self.kwargs = kwargs
+        self.augment_data = augment_data
 
         with open(path.join(splits_path, split+'.'+split_extension)) as f:
             self.items = [l.rstrip('\n').split(split_separator) for l in f][split_skiplines:]
 
         self.init_ids()
         self.init_cmap()
+        self.init_cnames()
 
     # to be overridden
     def init_ids(self):
@@ -38,6 +41,9 @@ class BaseDataset(Dataset):
     # to be overridden
     def init_cmap(self):
         self.cmap = np.array([[i,i,i] for i in range(256)])
+        
+    def init_cnames(self):
+        self.cnames = ["c%03d"%i for i in range(256)]
 
     def resize_and_crop(self, rgb=None, gt=None, depth=None):
         if self.resize_to is not None:
@@ -78,7 +84,8 @@ class BaseDataset(Dataset):
         gt = self.load_semantic(path.join(self.root_path, gt_path)) if 'semantic' in self.sensors else None
 
         rgb, gt, _ = self.resize_and_crop(rgb=rgb, gt=gt)
-        rgb, gt, _ = self.data_augment(rgb=rgb, gt=gt)
+        if self.augment_data:
+            rgb, gt, _ = self.data_augment(rgb=rgb, gt=gt)
         rgb, gt, _ = self.to_pytorch(rgb=rgb, gt=gt)
 
         out_dict = {}

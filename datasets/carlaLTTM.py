@@ -125,7 +125,8 @@ class LTTMDataset(CityDataset):
             depth = out_dict['depth'][pos] if 'depth' in out_dict else None
 
             rgb, gt, depth = self.resize_and_crop(rgb=rgb, gt=gt, depth=depth)
-            rgb, gt, depth = self.data_augment(rgb=rgb, gt=gt, depth=depth)
+            if augment_data:
+                rgb, gt, depth = self.data_augment(rgb=rgb, gt=gt, depth=depth)
             rgb, gt, depth = self.to_pytorch(rgb=rgb, gt=gt, depth=depth)
 
             if rgb is not None: out_dict['rgb'][pos] = rgb

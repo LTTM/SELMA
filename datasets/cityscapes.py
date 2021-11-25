@@ -11,3 +11,24 @@ class CityDataset(BaseDataset):
 
     def init_cmap(self):
         self.cmap = City19cmap
+    
+    def init_cnames(self):
+        self.cnames = ["road",
+                       "sidewalk",
+                       "building",
+                       "wall",
+                       "fence",
+                       "pole",
+                       "traffic light",
+                       "traffic sign",
+                       "vegetation",
+                       "terrain",
+                       "sky",
+                       "person",
+                       "rider",
+                       "car",
+                       "truck",
+                       "bus",
+                       "train",
+                       "motorbike",
+                       "bycicle"]
