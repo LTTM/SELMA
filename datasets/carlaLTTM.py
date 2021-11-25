@@ -2,6 +2,7 @@ import json
 from os import path
 import numpy as np
 from plyfile import PlyData
+import cv2 as cv
 from datasets.cityscapes import CityDataset
 
 class LTTMDataset(CityDataset):
@@ -84,6 +85,7 @@ class LTTMDataset(CityDataset):
         folder = self.towns_map[town]+"_"+self.weathers_map[weather]+self.tods_map[tod]
         wpath = path.join(self.root_path, folder, "%s%s", folder+"_"+waypoint+".%s")
 
+        ego_data = json.load(open(path.join(self.root_path, folder, "waypoints.json"), 'r'))[waypoint]
         out_dict = {sensor:{} for sensor in self.sensors}
 
         for sensor in self.sensors:
@@ -119,7 +121,7 @@ class LTTMDataset(CityDataset):
 
         for pos in poss:
             rgb = out_dict['rgb'][pos] if 'rgb' in out_dict else None
-            gt = out_dict['semantic'][pos] if 'gt' in out_dict else None
+            gt = self.map_to_train(out_dict['semantic'][pos]) if 'semantic' in out_dict else None
             depth = out_dict['depth'][pos] if 'depth' in out_dict else None
 
             rgb, gt, depth = self.resize_and_crop(rgb=rgb, gt=gt, depth=depth)
@@ -127,11 +129,17 @@ class LTTMDataset(CityDataset):
             rgb, gt, depth = self.to_pytorch(rgb=rgb, gt=gt, depth=depth)
 
             if rgb is not None: out_dict['rgb'][pos] = rgb
-            if gt is not None: out_dict['gt'][pos] = gt
+            if gt is not None: out_dict['semantic'][pos] = gt
             if depth is not None: out_dict['depth'][pos] = depth
 
-        return out_dict, item
+        return out_dict, ego_data, item
 
+    # carla.
+    @staticmethod
+    def load_depth(im_path, rescale=True): # return the depth in meters
+        t = cv.imread(im_path).astype(int)*np.array([256*256, 256, 1])
+        t = t.sum(axis=2)/(256 * 256 * 256 - 1.)
+        return 1000.*t if rescale else t
 
     def load_lidar(self, path, xyz_shift=0.):
         data = PlyData.read(path)

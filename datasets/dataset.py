@@ -63,7 +63,7 @@ class BaseDataset(Dataset):
         if self.kwargs['flip'] and random.random()<.5:
             if rgb is not None: rgb = (rgb[:,::-1,...]).copy()
             if gt is not None: gt = (gt[:,::-1,...]).copy()
-            if depth is not None: depth = (gt[:,::-1,...]).copy()
+            if depth is not None: depth = (depth[:,::-1,...]).copy()
         if self.kwargs['gaussian_blur']:
             sigma = random.random()*self.kwargs['blur_mul']
             if rgb is not None: rgb = cv.GaussianBlur(rgb, (0,0), sigma)
@@ -95,8 +95,11 @@ class BaseDataset(Dataset):
     def to_pytorch(rgb=None, gt=None, depth=None):
         if rgb is not None: rgb = torch.from_numpy(np.transpose(rgb-[104.00698793, 116.66876762, 122.6789143], (2, 0, 1)).astype(np.float32))
         if gt is not None: torch.from_numpy(gt.astype(np.long))
-        if depth is not None: torch.from_numpy(gt.astype(np.float32))
+        if depth is not None: torch.from_numpy(depth.astype(np.float32))
         return rgb, gt, depth
+
+    def color_label(self, gt):
+        return self.cmap[np.array(gt)]
 
     @staticmethod
     def to_rgb(tensor):
@@ -114,12 +117,10 @@ class BaseDataset(Dataset):
         # image should be grayscale
         return cv.imread(im_path, cv.IMREAD_UNCHANGED)
 
-    # carla.
     @staticmethod
-    def load_depth(im_path, rescale=True): # return the depth in meters
-        t = cv.imread(im_path).astype(int)*np.array([256*256, 256, 1])
-        t = t.sum(axis=2)/(256 * 256 * 256 - 1.)
-        return 1000.*t if rescale else t
+    def load_depth(im_path):
+        # image should be grayscale
+        return cv.imread(im_path, cv.IMREAD_UNCHANGED)
 
     def map_to_train(self, gt):
         gt_clone = self.ignore_index*np.ones(gt.shape, dtype=np.long)
