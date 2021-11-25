@@ -1,6 +1,5 @@
 import torch
 from models.resnet import DeeplabResnet, Bottleneck
-from models.vgg import DeeplabVGG16, DeeplabVGG13
 from models.deeplab import DeepLabV2Classifier, DeepLabV3Classifier, MSIWDeepLabV2Classifier
 from models.fcn import FCNClassifier
 from models.pspnet import PSPNetClassifier

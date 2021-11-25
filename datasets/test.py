@@ -8,7 +8,7 @@ from datasets.carlaLTTM import LTTMDataset
 from utils.bbox import *
 
 t = LTTMDataset(root_path="datasets/demo",
-                splits_path="lists",
+                splits_path="splits",
                 sensors=["rgb", "lidar", "semantic", "depth", "bbox"],
                 sensor_positions=["D","T"],
                 town=None,
