@@ -69,6 +69,8 @@ def init_params():
                            help='Split file to be used for training samples')
     argparser.add_argument('--val_split', default='val', type=str,
                            help='Split file to be used for validation samples')
+    argparser.add_argument('--test_split', default='test', type=str,
+                           help='Split file to be used for test samples')
     argparser.add_argument('--sensors', default='rgb,semantic', type=str2intlist,
                            help='Sensors to be used - syntax:"sen1,sen2,..."')
 
@@ -117,9 +119,15 @@ def init_params():
                        help='Number of iterations every which a validation is run, <= 0 disables validation')
     argparser.add_argument('--logdir', default="log/%d"%(int(time.time())), type=str,
                    help='Path to the log directory')
+    argparser.add_argument('--ckpt_file', default=None, type=str,
+                   help='Path to the model checkpoint, used in test script')
                    
     return argparser.parse_args()
     
+class StripColorsFormatter(logging.Formatter):
+    def format(self,record):
+        fmt = super(StripColorsFormatter, self).format(record)
+        return fmt.replace('\033[91m','').replace('\033[92m','').replace('\033[93m','').replace('\033[96m','').replace('\033[0m','')
     
 def init_logger(args):
     if os.path.exists(args.logdir):
@@ -134,9 +142,10 @@ def init_logger(args):
     logger.setLevel(logging.INFO)
     fh = logging.FileHandler(os.path.join(args.logdir, 'train_log.txt'))
     ch = logging.StreamHandler()
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    fh.setFormatter(formatter)
-    ch.setFormatter(formatter)
+    fhformatter = StripColorsFormatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    chformatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    fh.setFormatter(fhformatter)
+    ch.setFormatter(chformatter)
     logger.addHandler(fh)
     logger.addHandler(ch)
 

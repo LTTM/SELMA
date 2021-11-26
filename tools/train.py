@@ -178,3 +178,5 @@ if __name__ == "__main__":
     trainer = Trainer(args, writer, logger)
     trainer.train()
     
+    trainer.writer.flush()
+    trainer.writer.close()
