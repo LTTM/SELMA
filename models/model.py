@@ -37,7 +37,7 @@ def SegmentationModel(num_classes, classifier, pretrained=True):
         # add backbone to model for later use
         model.parameters_dict = [{'params': model.get_1x_lr_params_NOscale(), 'lr': 1},
                                  {'params': model.get_10x_lr_params(), 'lr': 10 * 1}]
-     else:
+    else:
         model.parameters_dict = [{'params': model.parameters(), 'lr': 1}]
 
     return model

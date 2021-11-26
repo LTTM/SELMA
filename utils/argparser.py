@@ -55,8 +55,8 @@ def init_params():
     argparser = argparse.ArgumentParser()
 
     argparser.add_argument('--dataset', default="gta", type=parse_dataset,
-                           choices=['lttm', 'city', 'gta', 'idd', 'mapi'],
-                           help='The dataset used for supervised training')
+                           choices=[LTTMDataset, CityDataset, GTAVDataset, IDDDataset, MapillaryDataset],
+                           help="The dataset used for supervised training, choose from ['lttm', 'city', 'gta', 'idd', 'mapi']")
     argparser.add_argument('--rescale_size', default=[1280,720], type=str2intlist,
                            help='Size the images will be resized to during loading, before crop - syntax:"1280,720"')
     argparser.add_argument('--crop_images', default=False, type=str2bool,
@@ -69,10 +69,10 @@ def init_params():
                            help='Split file to be used for training samples')
     argparser.add_argument('--val_split', default='val', type=str,
                            help='Split file to be used for validation samples')
-    argparser.add_argument('--sensors', default='rgb,semantic', type=str2str_none_num,
+    argparser.add_argument('--sensors', default='rgb,semantic', type=str2intlist,
                            help='Sensors to be used - syntax:"sen1,sen2,..."')
 
-    argparser.add_argument('--positions', default='D', type=str2str_none_num,
+    argparser.add_argument('--positions', default='D', type=str2intlist,
                            help='Positions of the sensors, only for lttm set - syntax:"pos1,pos2,..."')
     argparser.add_argument('--town', default=None, type=str,
                            help='Override town on lttm dataset')

@@ -47,6 +47,15 @@ class BaseDataset(Dataset):
 
     def resize_and_crop(self, rgb=None, gt=None, depth=None):
         if self.resize_to is not None:
+            if '' in self.resize_to and not (rgb is None and gt is None and depth is None):
+                if rgb is not None: H, W, _ = rgb.shape
+                if gt is not None: H, W = gt.shape
+                if depth is not None: H, W = depth.shape
+                if self.resize_to.index('') == 0:
+                    self.resize_to[0] = int(W*self.resize_to[1]/H)
+                else:
+                    self.resize_to[1] = int(H*self.resize_to[0]/W)
+
             if rgb is not None: rgb = cv.resize(rgb, self.resize_to, interpolation=cv.INTER_AREA) # usually images are downsized, best results obtained with inter_area
             if gt is not None: gt = cv.resize(gt, self.resize_to, interpolation=cv.INTER_NEAREST_EXACT) # labels must be mapped as-is
             if depth is not None: depth = cv.resize(depth, self.resize_to, interpolation=cv.INTER_NEAREST_EXACT)
@@ -81,7 +90,7 @@ class BaseDataset(Dataset):
         rgb_path, gt_path = self.items[item]
 
         rgb = self.load_rgb(path.join(self.root_path, rgb_path)) if 'rgb' in self.sensors else None
-        gt = self.load_semantic(path.join(self.root_path, gt_path)) if 'semantic' in self.sensors else None
+        gt = self.map_to_train(self.load_semantic(path.join(self.root_path, gt_path))) if 'semantic' in self.sensors else None
 
         rgb, gt, _ = self.resize_and_crop(rgb=rgb, gt=gt)
         if self.augment_data:
@@ -91,7 +100,7 @@ class BaseDataset(Dataset):
         out_dict = {}
         if rgb is not None: out_dict['rgb'] = rgb
         if gt is not None: out_dict['semantic'] = gt
-        if depth is not None: out_dict['depth'] = depth
+        #if depth is not None: out_dict['depth'] = depth
 
         return out_dict, item
 

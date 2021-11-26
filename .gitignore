@@ -1,4 +1,5 @@
 **/.DS_Store
 **/*.pth
 **/__pycache__
+logs
 log

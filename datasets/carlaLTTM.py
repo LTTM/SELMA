@@ -24,7 +24,7 @@ class LTTMDataset(CityDataset):
         self.sensor_positions = sensor_positions
 
         if town is not None:
-            self.items = [[town, e[1], e[2], e[3]] for e in self.items]
+            self.items = [e for e in self.items if e[0] == town]
 
         if weather is not None:
             self.items = [[e[0], weather, e[2], e[3]] for e in self.items]
@@ -81,7 +81,8 @@ class LTTMDataset(CityDataset):
         self.ignore_index = -1
 
     def __getitem__(self, item):
-        town, tod, weather, waypoint = self.items[item]
+        town, weather, tod, waypoint = self.items[item]
+
         folder = self.towns_map[town]+"_"+self.weathers_map[weather]+self.tods_map[tod]
         wpath = path.join(self.root_path, folder, "%s%s", folder+"_"+waypoint+".%s")
 
@@ -125,7 +126,7 @@ class LTTMDataset(CityDataset):
             depth = out_dict['depth'][pos] if 'depth' in out_dict else None
 
             rgb, gt, depth = self.resize_and_crop(rgb=rgb, gt=gt, depth=depth)
-            if augment_data:
+            if self.augment_data:
                 rgb, gt, depth = self.data_augment(rgb=rgb, gt=gt, depth=depth)
             rgb, gt, depth = self.to_pytorch(rgb=rgb, gt=gt, depth=depth)
 
