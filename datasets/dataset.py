@@ -29,7 +29,8 @@ class BaseDataset(Dataset):
         self.augment_data = augment_data
 
         with open(path.join(splits_path, split+'.'+split_extension)) as f:
-            self.items = [l.rstrip('\n').split(split_separator) for l in f][split_skiplines:]
+            #self.items = [l.rstrip('\n').split(split_separator) for l in f][split_skiplines:]
+            self.items = [[e.lstrip('/') for e in l.rstrip('\n').split(split_separator)] for l in f][split_skiplines:]
 
         self.init_ids()
         self.init_cmap()
