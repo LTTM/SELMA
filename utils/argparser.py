@@ -95,7 +95,7 @@ def init_params():
                            help='Training batch size')
     argparser.add_argument('--dataloader_workers', default=4, type=int,
                            help='Number of workers to use for each dataloader (significantly affects RAM consumption)')
-    argparser.add_argument('--pin_memory', default=True, type=str2bool)
+    argparser.add_argument('--pin_memory', default=False, type=str2bool)
     
     argparser.add_argument('--classifier', default='DeepLabV3', type=str,
                            choices=['DeepLabV2', 'DeepLabV3', 'DeepLabV2MSIW', 'FCN', 'PSPNet', 'UNet'],

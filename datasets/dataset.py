@@ -1,5 +1,7 @@
 from torch.utils.data import Dataset
 import cv2 as cv
+from PIL import Image, ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 import numpy as np
 import torch
 import random
@@ -123,20 +125,37 @@ class BaseDataset(Dataset):
         t = np.round(t[...,::-1]).astype(np.uint8) # rgb
         return t
 
+    # @staticmethod
+    # def load_rgb(im_path):
+        # image is read in bgr
+        # return cv.imread(im_path)
+    
+    # @staticmethod
+    # def load_semantic(im_path):
+        # image should be grayscale
+        # return cv.imread(im_path, cv.IMREAD_UNCHANGED)
+
+    # @staticmethod
+    # def load_depth(im_path):
+        # image should be grayscale
+        # return cv.imread(im_path, cv.IMREAD_UNCHANGED)
+    
+    # convert to pil, to try fixing dataloader bug
+    # slower than opencv
     @staticmethod
     def load_rgb(im_path):
-        # image is read in bgr
-        return cv.imread(im_path)
+        # image is read in rgb
+        im = Image.open(im_path)
+        im = np.array(im)[...,::-1] # bgr
+        return im.copy()
+        
+    @staticmethod
+    def load_semantic(path):
+        return np.array(Image.open(path))
 
     @staticmethod
-    def load_semantic(im_path):
-        # image should be grayscale
-        return cv.imread(im_path, cv.IMREAD_UNCHANGED)
-
-    @staticmethod
-    def load_depth(im_path):
-        # image should be grayscale
-        return cv.imread(im_path, cv.IMREAD_UNCHANGED)
+    def load_depth(path):
+        return np.array(Image.open(path))
 
     def map_to_train(self, gt):
         gt_clone = self.ignore_index*np.ones(gt.shape, dtype=np.long)

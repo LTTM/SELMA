@@ -3,15 +3,19 @@ sys.path.append(os.path.abspath('.'))
 
 import numpy as np
 import random
+
 import torch
 torch.backends.cudnn.benchmark = True
+
 from torch.nn import CrossEntropyLoss
 from torch.utils import data
 from tqdm import tqdm
-
+import time
+import gc
 from utils.argparser import init_params, init_logger
 from utils.metrics import Metrics
 from models.model import SegmentationModel
+
 
 def set_seed(seed):
     np.random.seed(seed)
@@ -71,7 +75,7 @@ class Trainer():
                                        drop_last=True,
                                        pin_memory=args.pin_memory)
 
-        self.args.validate_every_steps = min(self.args.validate_every_steps, len(self.tset))
+        self.args.validate_every_steps = min(self.args.validate_every_steps, len(self.tset)//args.batch_size)
 
         # to be changed when support to different class sets is added
         self.model = SegmentationModel(19, args.classifier)
@@ -92,15 +96,21 @@ class Trainer():
         for epoch in range(epochs):
             self.logger.info("Starting epoch %d of %d"%(epoch+1, epochs))
             self.train_epoch(epoch)
+            time.sleep(10)
+            gc.collect()
+            torch.cuda.empty_cache()
             miou = self.validate(epoch)
+            time.sleep(10)
+            gc.collect()
+            torch.cuda.empty_cache()
             torch.save(self.model.state_dict(), os.path.join(self.args.logdir, "latest.pth"))
-            self.logger.info("Validation score at epoch %d is %.2f"%(epoch, miou))
-            self.writer.add_scalar('val_mIoU', miou, epoch)
+            self.logger.info("Validation score at epoch %d is %.2f"%(epoch+1, miou))
+            self.writer.add_scalar('val_mIoU', miou, epoch+1)
             if miou > self.best_miou:
                 self.best_miou = miou
                 self.best_epoch = epoch
                 torch.save(self.model.state_dict(), os.path.join(self.args.logdir, "val_best.pth"))
-            self.logger.info("Best validation score is %.2f at epoch %d"%(self.best_miou, self.best_epoch))
+            self.logger.info("Best validation score is %.2f at epoch %d"%(self.best_miou, self.best_epoch+1))
 
     def train_epoch(self, epoch):
         pbar = tqdm(self.tloader, total=self.args.validate_every_steps, desc="Training Epoch %d"%(epoch+1))
@@ -136,13 +146,13 @@ class Trainer():
             if curr_iter == self.args.iterations-1:
                 break
         
-        self.writer.add_image("train_input", self.tset.to_rgb(x[0].cpu()), epoch, dataformats='HWC')
-        self.writer.add_image("train_label", self.tset.color_label(y[0].cpu()), epoch, dataformats='HWC')
-        self.writer.add_image("train_pred", self.tset.color_label(pred[0].cpu()), epoch, dataformats='HWC')
+        self.writer.add_image("train_input", self.tset.to_rgb(x[0].cpu()), epoch+1, dataformats='HWC')
+        self.writer.add_image("train_label", self.tset.color_label(y[0].cpu()), epoch+1, dataformats='HWC')
+        self.writer.add_image("train_pred", self.tset.color_label(pred[0].cpu()), epoch+1, dataformats='HWC')
         
         miou = metrics.percent_mIoU()
-        self.writer.add_scalar('train_mIoU', miou, epoch)
-        self.logger.info("Epoch %d done, score: %.2f -- Starting Validation"%(epoch, miou))
+        self.writer.add_scalar('train_mIoU', miou, epoch+1)
+        self.logger.info("Epoch %d done, score: %.2f -- Starting Validation"%(epoch+1, miou))
         
     def validate(self, epoch):
         pbar = tqdm(self.vloader, total=len(self.vset), desc="Validation")
@@ -161,9 +171,9 @@ class Trainer():
                 pred = torch.argmax(out.detach(), dim=1)
                 metrics.add_sample(pred, y)
 
-        self.writer.add_image("val_input", self.tset.to_rgb(x[0].cpu()), epoch, dataformats='HWC')
-        self.writer.add_image("val_label", self.tset.color_label(y[0].cpu()), epoch, dataformats='HWC')
-        self.writer.add_image("val_pred", self.tset.color_label(pred[0].cpu()), epoch, dataformats='HWC')
+        self.writer.add_image("val_input", self.tset.to_rgb(x[0].cpu()), epoch+1, dataformats='HWC')
+        self.writer.add_image("val_label", self.tset.color_label(y[0].cpu()), epoch+1, dataformats='HWC')
+        self.writer.add_image("val_pred", self.tset.color_label(pred[0].cpu()), epoch+1, dataformats='HWC')
 
         self.model.train()
         return metrics.percent_mIoU()
