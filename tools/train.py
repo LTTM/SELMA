@@ -96,13 +96,7 @@ class Trainer():
         for epoch in range(epochs):
             self.logger.info("Starting epoch %d of %d"%(epoch+1, epochs))
             self.train_epoch(epoch)
-            time.sleep(10)
-            gc.collect()
-            torch.cuda.empty_cache()
             miou = self.validate(epoch)
-            time.sleep(10)
-            gc.collect()
-            torch.cuda.empty_cache()
             torch.save(self.model.state_dict(), os.path.join(self.args.logdir, "latest.pth"))
             self.logger.info("Validation score at epoch %d is %.2f"%(epoch+1, miou))
             self.writer.add_scalar('val_mIoU', miou, epoch+1)
@@ -113,7 +107,8 @@ class Trainer():
             self.logger.info("Best validation score is %.2f at epoch %d"%(self.best_miou, self.best_epoch+1))
 
     def train_epoch(self, epoch):
-        pbar = tqdm(self.tloader, total=self.args.validate_every_steps, desc="Training Epoch %d"%(epoch+1))
+        it = iter(self.tloader)
+        pbar = tqdm(it, total=self.args.validate_every_steps, desc="Training Epoch %d"%(epoch+1))
         metrics = Metrics(self.tset.cnames)
         for i, sample in enumerate(pbar):
             
@@ -155,7 +150,8 @@ class Trainer():
         self.logger.info("Epoch %d done, score: %.2f -- Starting Validation"%(epoch+1, miou))
         
     def validate(self, epoch):
-        pbar = tqdm(self.vloader, total=len(self.vset), desc="Validation")
+        it = iter(self.vloader)
+        pbar = tqdm(it, total=len(self.vset), desc="Validation")
         metrics = Metrics(self.tset.cnames)
         self.model.eval()
         with torch.no_grad():
