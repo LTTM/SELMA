@@ -90,6 +90,9 @@ def init_params():
     argparser.add_argument('--gaussian_blur', default=True, type=str2bool,
                            help='Whether to apply random gaussian blurring')
     argparser.add_argument('--blur_mul', default=1, type=int)
+    argparser.add_argument('--gaussian_noise', default=True, type=str2bool,
+                           help='Whether to apply random gaussian blurring')
+    argparser.add_argument('--noise_mul', default=20, type=int)
 
     argparser.add_argument('--batch_size', default=1, type=int,
                            help='Training batch size')

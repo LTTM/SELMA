@@ -45,6 +45,8 @@ class Trainer():
                                  flip=args.random_flip,
                                  gaussian_blur=args.gaussian_blur,
                                  blur_mul=args.blur_mul,
+                                 gaussian_noise=args.gaussian_noise,
+                                 noise_mul=args.noise_mul,
                                  sensors=args.sensors,
                                  town=args.town,
                                  weather=args.weather,
@@ -96,8 +98,8 @@ class Trainer():
         for epoch in range(epochs):
             self.logger.info("Starting epoch %d of %d"%(epoch+1, epochs))
             self.train_epoch(epoch)
-            miou = self.validate(epoch)
             torch.save(self.model.state_dict(), os.path.join(self.args.logdir, "latest.pth"))
+            miou = self.validate(epoch)
             self.logger.info("Validation score at epoch %d is %.2f"%(epoch+1, miou))
             self.writer.add_scalar('val_mIoU', miou, epoch+1)
             if miou > self.best_miou:

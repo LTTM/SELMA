@@ -26,11 +26,12 @@ class LTTMDataset(CityDataset):
         if town is not None:
             self.items = [e for e in self.items if e[0] == town]
 
-        if weather is not None:
-            self.items = [[e[0], weather, e[2], e[3]] for e in self.items]
-
         if time_of_day is not None:
-            self.items = [[e[0], e[1], time_of_day, e[3]] for e in self.items]
+            self.items = [[e[0], time_of_day, e[2], e[3]] for e in self.items]
+
+        if weather is not None:
+            self.items = [[e[0], e[1], weather, e[3]] for e in self.items]
+
 
         self.towns_map      = {"01":        "Town01_Opt",
                                "02":        "Town02_Opt",
@@ -81,7 +82,7 @@ class LTTMDataset(CityDataset):
         self.ignore_index = -1
 
     def __getitem__(self, item):
-        town, weather, tod, waypoint = self.items[item]
+        town, tod, weather, waypoint = self.items[item]
 
         folder = self.towns_map[town]+"_"+self.weathers_map[weather]+self.tods_map[tod]
         wpath = path.join(self.root_path, folder, "%s%s", folder+"_"+waypoint+".%s")

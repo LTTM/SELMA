@@ -2,6 +2,12 @@ from datasets.dataset import BaseDataset
 from utils.cmaps import City19cmap
 
 class CityDataset(BaseDataset):
+
+    def __init__(self, class_set='city19', **kwargs):
+        super(CityDataset, self).__init__(**kwargs)
+        
+        self.class_set = class_set
+
     def init_ids(self):
         self.raw_to_train = {0:-1, 1:-1, 2:-1, 3:-1, 4:-1, 5:-1, 6:-1, 7:0, 8:1, 9:-1, 10:-1,
                              11:2, 12:3, 13:4, 14:-1, 15:-1, 16:-1, 17:5, 18:-1, 19:6, 20:7,

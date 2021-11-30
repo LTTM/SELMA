@@ -78,15 +78,38 @@ class BaseDataset(Dataset):
         return rgb, gt, depth
 
     def data_augment(self, rgb=None, gt=None, depth=None):
-        if self.kwargs['flip'] and random.random()<.5:
+        if self.kwargs['flip'] and random.random() <.5:
             if rgb is not None: rgb = (rgb[:,::-1,...]).copy()
             if gt is not None: gt = (gt[:,::-1,...]).copy()
             if depth is not None: depth = (depth[:,::-1,...]).copy()
-        if self.kwargs['gaussian_blur']:
+    
+        if rgb is not None and self.kwargs['gaussian_blur'] and random.random() <.5:
             sigma = random.random()*self.kwargs['blur_mul']
-            if rgb is not None: rgb = cv.GaussianBlur(rgb, (0,0), sigma)
-            # not sure if it makes sense....
-            #depth = cv.GaussianBlur(depth, (0,0), sigma) if depth is not None
+            rgb = cv.GaussianBlur(rgb, (0,0), sigma)
+
+        if rgb is not None and self.kwargs['gaussian_noise'] and random.random() <.5:
+            stride1 = self.kwargs['noise_mul']*(np.random.rand(rgb.shape[0], rgb.shape[1], rgb.shape[2])-.5)
+            stride2 = self.kwargs['noise_mul']**(cv.resize(
+                            np.random.rand(rgb.shape[0]//2, rgb.shape[1]//2, rgb.shape[2]).astype(np.float32),
+                            (rgb.shape[1], rgb.shape[0])
+                        )-.5)
+            stride4 = self.kwargs['noise_mul']**(cv.resize(
+                            np.random.rand(rgb.shape[0]//4, rgb.shape[1]//4, rgb.shape[2]).astype(np.float32),
+                            (rgb.shape[1], rgb.shape[0])
+                        )-.5)
+            stride8 = self.kwargs['noise_mul']**(cv.resize(
+                            np.random.rand(rgb.shape[0]//8, rgb.shape[1]//8, rgb.shape[2]).astype(np.float32),
+                            (rgb.shape[1], rgb.shape[0])
+                        )-.5)
+            stride16 = self.kwargs['noise_mul']**(cv.resize(
+                            np.random.rand(rgb.shape[0]//16, rgb.shape[1]//16, rgb.shape[2]).astype(np.float32),
+                            (rgb.shape[1], rgb.shape[0])
+                        )-.5)
+            stride32 = self.kwargs['noise_mul']**(cv.resize(
+                            np.random.rand(rgb.shape[0]//32, rgb.shape[1]//32, rgb.shape[2]).astype(np.float32),
+                            (rgb.shape[1], rgb.shape[0])
+                        )-.5)
+            rgb = np.round(np.clip(rgb+stride1+stride2+stride4+stride8+stride16+stride32, a_min=0, a_max=255)).astype(np.uint8)
         return rgb, gt, depth
 
     def __getitem__(self, item):
@@ -110,6 +133,8 @@ class BaseDataset(Dataset):
     def __len__(self):
         return len(self.items)
 
+    """
+    maxsquareloss preprocessing
     @staticmethod
     def to_pytorch(rgb=None, gt=None, depth=None):
         if rgb is not None: rgb = torch.from_numpy(np.transpose(rgb-[104.00698793, 116.66876762, 122.6789143], (2, 0, 1)).astype(np.float32))
@@ -117,46 +142,43 @@ class BaseDataset(Dataset):
         if depth is not None: torch.from_numpy(depth.astype(np.float32))
         return rgb, gt, depth
 
-    def color_label(self, gt):
-        return self.cmap[np.array(gt)]
-
     @staticmethod
     def to_rgb(tensor):
         t = np.array(tensor.transpose(0,1).transpose(1,2))+[104.00698793, 116.66876762, 122.6789143] # bgr
         t = np.round(t[...,::-1]).astype(np.uint8) # rgb
         return t
-
-    # @staticmethod
-    # def load_rgb(im_path):
-        # image is read in bgr
-        # return cv.imread(im_path)
-    
-    # @staticmethod
-    # def load_semantic(im_path):
-        # image should be grayscale
-        # return cv.imread(im_path, cv.IMREAD_UNCHANGED)
-
-    # @staticmethod
-    # def load_depth(im_path):
-        # image should be grayscale
-        # return cv.imread(im_path, cv.IMREAD_UNCHANGED)
-    
-    # convert to pil, to try fixing dataloader bug
-    # slower than opencv
-    @staticmethod
-    def load_rgb(im_path):
-        # image is read in rgb
-        im = Image.open(im_path)
-        im = np.array(im)[...,::-1] # bgr
-        return im.copy()
+    """
         
     @staticmethod
-    def load_semantic(path):
-        return np.array(Image.open(path))
+    def to_pytorch(rgb=None, gt=None, depth=None):
+        if rgb is not None: rgb = torch.from_numpy(np.transpose((rgb[...,::-1]/255.-[0.485, 0.456, 0.406])/[0.485, 0.456, 0.406], (2, 0, 1)).astype(np.float32))
+        if gt is not None: torch.from_numpy(gt.astype(np.long))
+        if depth is not None: torch.from_numpy(depth.astype(np.float32))
+        return rgb, gt, depth
 
     @staticmethod
-    def load_depth(path):
-        return np.array(Image.open(path))
+    def to_rgb(tensor):
+        t = (np.array(tensor.transpose(0,1).transpose(1,2))*[0.485, 0.456, 0.406]+[0.485, 0.456, 0.406])*255.
+        t = np.round(t).astype(np.uint8) # rgb
+        return t
+
+    def color_label(self, gt):
+        return self.cmap[np.array(gt)]
+
+    @staticmethod
+    def load_rgb(im_path):
+        #image is read in bgr
+        return cv.imread(im_path)
+    
+    @staticmethod
+    def load_semantic(im_path):
+        #image should be grayscale
+        return cv.imread(im_path, cv.IMREAD_UNCHANGED)
+
+    @staticmethod
+    def load_depth(im_path):
+        #image should be grayscale
+        return cv.imread(im_path, cv.IMREAD_UNCHANGED)
 
     def map_to_train(self, gt):
         gt_clone = self.ignore_index*np.ones(gt.shape, dtype=np.long)
