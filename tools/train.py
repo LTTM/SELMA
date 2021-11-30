@@ -47,6 +47,7 @@ class Trainer():
                                  blur_mul=args.blur_mul,
                                  gaussian_noise=args.gaussian_noise,
                                  noise_mul=args.noise_mul,
+                                 color_shift=args.color_shift,
                                  sensors=args.sensors,
                                  town=args.town,
                                  weather=args.weather,

@@ -110,6 +110,14 @@ class BaseDataset(Dataset):
                             (rgb.shape[1], rgb.shape[0])
                         )-.5)
             rgb = np.round(np.clip(rgb+stride1+stride2+stride4+stride8+stride16+stride32, a_min=0, a_max=255)).astype(np.uint8)
+            
+        if rgb is not None and self.kwargs['color_shift'] and random.random() <.5:
+            ch = random.randrange(3)
+            shift_x = random.randrange(21)-10
+            shift_y = random.randrange(21)-10
+            rgb[...,ch] = np.roll(rgb[...,ch], shift_x, axis=1)
+            rgb[...,ch] = np.roll(rgb[...,ch], shift_y, axis=0)
+            
         return rgb, gt, depth
 
     def __getitem__(self, item):

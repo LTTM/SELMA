@@ -89,10 +89,12 @@ def init_params():
                            help='Whether to randomly flip images l/r')
     argparser.add_argument('--gaussian_blur', default=True, type=str2bool,
                            help='Whether to apply random gaussian blurring')
-    argparser.add_argument('--blur_mul', default=1, type=int)
+    argparser.add_argument('--blur_mul', default=5, type=int)
     argparser.add_argument('--gaussian_noise', default=True, type=str2bool,
-                           help='Whether to apply random gaussian blurring')
+                           help='Whether to apply random gaussian noise')
     argparser.add_argument('--noise_mul', default=20, type=int)
+    argparser.add_argument('--color_shift', default=True, type=str2bool,
+                           help='Whether to randomly shift color channels')
 
     argparser.add_argument('--batch_size', default=1, type=int,
                            help='Training batch size')
