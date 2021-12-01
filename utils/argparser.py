@@ -47,6 +47,10 @@ def parse_dataset(dname):
         return GTAVDataset
     elif dname=='idd':
         return IDDDataset
+    elif dname=='idda':
+        return IDDADataset
+    elif dname=='synthia':
+        return SYNTHIADataset
     else:
         return MapillaryDataset
 
@@ -55,7 +59,7 @@ def init_params():
     argparser = argparse.ArgumentParser()
 
     argparser.add_argument('--dataset', default="gta", type=parse_dataset,
-                           choices=[LTTMDataset, CityDataset, GTAVDataset, IDDDataset, MapillaryDataset],
+                           choices=[LTTMDataset, CityDataset, GTAVDataset, IDDDataset, IDDADataset, SYNTHIADataset, MapillaryDataset],
                            help="The dataset used for supervised training, choose from ['lttm', 'city', 'gta', 'idd', 'mapi']")
     argparser.add_argument('--target_dataset', default="city", type=parse_dataset,
                            choices=[LTTMDataset, CityDataset, GTAVDataset, IDDDataset, MapillaryDataset],
@@ -112,6 +116,8 @@ def init_params():
     argparser.add_argument('--weather', default=None, type=str,
                            help='Override Weather on lttm dataset')
 
+    argparser.add_argument('--class_set', default='city19', type=str,
+                           help='Which class set to use.', choices=['city19', 'idd17', 'synthia16', 'idda16', 'sii15', 'crosscity13', 'cci12'])
     argparser.add_argument('--augment_data', default=True, type=str2bool,
                            help='Whether to augment the (training) images with flip & Gaussian Blur')
     argparser.add_argument('--random_flip', default=True, type=str2bool,

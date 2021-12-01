@@ -65,27 +65,52 @@ City19cmap = np.array([[128, 64,128], # road
                        [  0,  0,  0]], dtype=np.uint8) # void class
 
 
+
+#######################################
+# ------ IDD 17 CLASSES ------ #
+#######################################
+
+Idd17cmap = np.array([[128, 64,128], # road
+                      [244, 35,232], # sidewalk
+                      [ 70, 70, 70], # building
+                      [102,102,156], # wall
+                      [190,153,153], # fence
+                      [153,153,153], # pole
+                      [250,170, 30], # traffic light
+                      [220,220,  0], # traffic sign
+                      [107,142, 35], # vegetation
+                      [ 70,130,180], # sky
+                      [220, 20, 60], # person
+                      [255,  0,  0], # rider
+                      [  0,  0,142], # car
+                      [  0,  0, 70], # truck
+                      [  0, 60,100], # bus
+                      [  0,  0,230], # motorcycle
+                      [119, 11, 32], # bicycle
+                      [  0,  0,  0]], dtype=np.uint8) # void class
+
+
 #######################################
 # -------- SYNTHIA16 CLASSES -------- #
 #######################################
 
-City16cmap = np.array([[128, 64,128], # road
-                       [244, 35,232], # sidewalk
-                       [ 70, 70, 70], # building
-                       [250,170, 30], # traffic light
-                       [220,220,  0], # traffic sign
-                       [107,142, 35], # vegetation
-                       [152,251,152], # terrain
-                       [ 70,130,180], # sky
-                       [220, 20, 60], # person
-                       [255,  0,  0], # rider
-                       [  0,  0,142], # car
-                       [  0,  0, 70], # truck
-                       [  0, 60,100], # bus
-                       [  0, 80,100], # train
-                       [  0,  0,230], # motorcycle
-                       [119, 11, 32], # bicycle
-                       [  0,  0,  0]], dtype=np.uint8) # void class
+Synthia16cmap = np.array([[128, 64,128], # road
+                          [244, 35,232], # sidewalk
+                          [ 70, 70, 70], # building
+                          [250,170, 30], # traffic light
+                          [220,220,  0], # traffic sign
+                          [107,142, 35], # vegetation
+                          [152,251,152], # terrain
+                          [ 70,130,180], # sky
+                          [220, 20, 60], # person
+                          [255,  0,  0], # rider
+                          [  0,  0,142], # car
+                          [  0,  0, 70], # truck
+                          [  0, 60,100], # bus
+                          [  0, 80,100], # train
+                          [  0,  0,230], # motorcycle
+                          [119, 11, 32], # bicycle
+                          [  0,  0,  0]], dtype=np.uint8) # void class
 
 
 #######################################
@@ -112,52 +137,32 @@ Idda16cmap = np.array([[128, 64,128], # road
                        
 
 #######################################
-# ------ IDDASYNTHIA15 CLASSES ------ #
+# ---------- SII15 CLASSES ---------- #
 #######################################
 
-IddaSynth15cmap = np.array([[128, 64,128], # road
-                            [244, 35,232], # sidewalk
-                            [ 70, 70, 70], # building
-                            [102,102,156], # wall
-                            [190,153,153], # fence
-                            [153,153,153], # pole
-                            [250,170, 30], # traffic light
-                            [220,220,  0], # traffic sign
-                            [107,142, 35], # vegetation
-                            [ 70,130,180], # sky
-                            [220, 20, 60], # person
-                            [255,  0,  0], # rider
-                            [  0,  0,142], # car
-                            [  0,  0,230], # motorcycle
-                            [119, 11, 32], # bicycle
-                            [  0,  0,  0]], dtype=np.uint8) # void class
+SII15cmap = np.array([[128, 64,128], # road
+                      [244, 35,232], # sidewalk
+                      [ 70, 70, 70], # building
+                      [102,102,156], # wall
+                      [190,153,153], # fence
+                      [153,153,153], # pole
+                      [250,170, 30], # traffic light
+                      [220,220,  0], # traffic sign
+                      [107,142, 35], # vegetation
+                      [ 70,130,180], # sky
+                      [220, 20, 60], # person
+                      [255,  0,  0], # rider
+                      [  0,  0,142], # car
+                      [  0,  0,230], # motorcycle
+                      [119, 11, 32], # bicycle
+                      [  0,  0,  0]], dtype=np.uint8) # void class
 
 
 #######################################
 # ------- CROSSCITY13 CLASSES ------- #
 #######################################
 
-City13cmap = np.array([[128, 64,128], # road
-                       [244, 35,232], # sidewalk
-                       [ 70, 70, 70], # building
-                       [250,170, 30], # traffic light
-                       [220,220,  0], # traffic sign
-                       [107,142, 35], # vegetation
-                       [ 70,130,180], # sky
-                       [220, 20, 60], # person
-                       [255,  0,  0], # rider
-                       [  0,  0,142], # car
-                       [  0, 60,100], # bus
-                       [  0,  0,230], # motorcycle
-                       [119, 11, 32], # bicycle
-                       [  0,  0,  0]], dtype=np.uint8) # void class
-                       
-
-#######################################
-# ----- CROSSCITYIDDA12 CLASSES ----- #
-#######################################
-
-CrossCity13cmap = np.array([[128, 64,128], # road
+Crosscity13cmap = np.array([[128, 64,128], # road
                             [244, 35,232], # sidewalk
                             [ 70, 70, 70], # building
                             [250,170, 30], # traffic light
@@ -167,6 +172,26 @@ CrossCity13cmap = np.array([[128, 64,128], # road
                             [220, 20, 60], # person
                             [255,  0,  0], # rider
                             [  0,  0,142], # car
+                            [  0, 60,100], # bus
                             [  0,  0,230], # motorcycle
                             [119, 11, 32], # bicycle
                             [  0,  0,  0]], dtype=np.uint8) # void class
+                       
+
+#######################################
+# ----- CROSSCITYIDDA12 CLASSES ----- #
+#######################################
+
+CCI12cmap = np.array([[128, 64,128], # road
+                      [244, 35,232], # sidewalk
+                      [ 70, 70, 70], # building
+                      [250,170, 30], # traffic light
+                      [220,220,  0], # traffic sign
+                      [107,142, 35], # vegetation
+                      [ 70,130,180], # sky
+                      [220, 20, 60], # person
+                      [255,  0,  0], # rider
+                      [  0,  0,142], # car
+                      [  0,  0,230], # motorcycle
+                      [119, 11, 32], # bicycle
+                      [  0,  0,  0]], dtype=np.uint8) # void class
