@@ -7,9 +7,10 @@ from utils.cnames import city19, idd17, synthia16, idda16, sii15, crosscity13, c
 class CityDataset(BaseDataset):
 
     def __init__(self, class_set='city19', **kwargs):
+        self.class_set = class_set
+        
         super(CityDataset, self).__init__(**kwargs)
 
-        self.class_set = class_set
         self.init_idsmap()
 
     def init_ids(self):
