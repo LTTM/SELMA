@@ -104,8 +104,8 @@ class BaseDataset(Dataset):
             
         if rgb is not None and self.kwargs['color_shift'] and random.random() <.5:
             ch = random.randrange(3)
-            shift_x = random.randrange(21)-5
-            shift_y = random.randrange(21)-5
+            shift_x = random.randrange(11)-5
+            shift_y = random.randrange(11)-5
             rgb[...,ch] = np.roll(rgb[...,ch], shift_x, axis=1)
             rgb[...,ch] = np.roll(rgb[...,ch], shift_y, axis=0)
             

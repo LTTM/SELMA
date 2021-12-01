@@ -53,7 +53,8 @@ class Trainer():
                                  town=args.town,
                                  weather=args.weather,
                                  time_of_day=args.time_of_day,
-                                 sensors_positions=args.positions)
+                                 sensors_positions=args.positions,
+                                 class_set=args.class_set)
         self.tloader = data.DataLoader(self.tset,
                                        shuffle=True,
                                        num_workers=args.dataloader_workers,
@@ -71,7 +72,8 @@ class Trainer():
                                  town=args.town,
                                  weather=args.weather,
                                  time_of_day=args.time_of_day,
-                                 sensors_positions=args.positions)
+                                 sensors_positions=args.positions,
+                                 class_set=args.class_set)
         self.vloader = data.DataLoader(self.vset,
                                        shuffle=False,
                                        num_workers=args.dataloader_workers,
@@ -93,7 +95,8 @@ class Trainer():
                                              town=args.town,
                                              weather=args.weather,
                                              time_of_day=args.time_of_day,
-                                             sensors_positions=args.positions)
+                                             sensors_positions=args.positions,
+                                             class_set=args.class_set)
             self.tvloader = data.DataLoader(self.tvset,
                                              shuffle=False,
                                              num_workers=args.dataloader_workers,
@@ -102,7 +105,10 @@ class Trainer():
                                              pin_memory=args.pin_memory)
 
         # to be changed when support to different class sets is added
-        self.model = SegmentationModel(19, args.classifier)
+        num_classes = len(self.tset.cnames)
+        self.logger.info("Training on class set: %s, Classes: %d"%(args.class_set, num_classes))
+        
+        self.model = SegmentationModel(num_classes, args.classifier)
         self.model.to('cuda')
         
         self.optim = torch.optim.SGD(params=self.model.parameters_dict,
