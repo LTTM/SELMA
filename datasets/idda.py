@@ -4,7 +4,7 @@ from datasets.cityscapes import CityDataset
 
 class IDDADataset(CityDataset):
     def __init__(self, class_set='idda16', **kwargs):
-        super(SYNTHIADataset, self).__init__(**kwargs)
+        super(IDDADataset, self).__init__(**kwargs)
         
     def init_ids(self):
         self.raw_to_train = {0:-1, 1:2, 2:4, 3:-1, 4:11, 5:5, 6:0, 7:0, 8:1, 9:8, 10:13,
