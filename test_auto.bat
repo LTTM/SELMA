@@ -16,6 +16,6 @@ python tools/test.py --dataset "gta" --root_path "F:/Dataset/GTA/full" --splits_
 
 REM python tools/test.py --dataset "city" --root_path "F:/Dataset/Cityscapes_extra" --splits_path "F:/Dataset/Cityscapes_extra" --logdir "logs/test/carla_cn/carla_cn_to_city_dlv2" --rescale_size "1280," --classifier "DeepLabV2" --ckpt_file "C:/Users/barbato/Desktop/val_best.pth"
 
-REM python tools/test.py --dataset "city" --root_path "F:/Dataset/Cityscapes_extra" --splits_path "F:/Dataset/Cityscapes_extra" --logdir "logs/test/carla_mcnoon_DLV2b/city_dlv2_e3_noise50" --rescale_size "1280," --classifier "DeepLabV2" --ckpt_file "logs/carla_mcnoon_DLV2b_sn/latest.pth"
+REM python tools/test.py --dataset "city" --root_path "F:/Dataset/Cityscapes_extra" --splits_path "F:/Dataset/Cityscapes_extra" --logdir "logs/test/nas/carlacn_dlv2" --rescale_size "1280," --classifier "DeepLabV2MSIW" --ckpt_file "Y:/members/barbato/Code/CV_analyses/logs/carla_cn_DLv2b/val_best.pth"
 
 REM python tools/test.py --dataset "lttm" --root_path "D:/Datasets/CarlaLTTM" --splits_path "D:/Datasets/CarlaLTTM/splits" --train_split "train_mc" --val_split "val_mc" --test_split "test_mc" --time_of_day "noon" --logdir "logs/test/carla_mcnoon/carla_mcnoon_DLV2b" --rescale_size "1280," --classifier "DeepLabV2MSIW" --ckpt_file "logs/carla_mcnoon_DLV2b/val_best.pth"

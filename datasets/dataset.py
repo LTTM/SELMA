@@ -78,15 +78,6 @@ class BaseDataset(Dataset):
         return rgb, gt, depth
 
     def data_augment(self, rgb=None, gt=None, depth=None):
-        if self.kwargs['flip'] and random.random() <.5:
-            if rgb is not None: rgb = (rgb[:,::-1,...]).copy()
-            if gt is not None: gt = (gt[:,::-1,...]).copy()
-            if depth is not None: depth = (depth[:,::-1,...]).copy()
-    
-        if rgb is not None and self.kwargs['gaussian_blur'] and random.random() <.5:
-            sigma = random.random()*self.kwargs['blur_mul']
-            rgb = cv.GaussianBlur(rgb, (0,0), sigma)
-
         if rgb is not None and self.kwargs['gaussian_noise'] and random.random() <.5:
             stride1 = self.kwargs['noise_mul']*(np.random.rand(rgb.shape[0], rgb.shape[1], rgb.shape[2])-.5)
             stride2 = self.kwargs['noise_mul']**(cv.resize(
@@ -113,10 +104,25 @@ class BaseDataset(Dataset):
             
         if rgb is not None and self.kwargs['color_shift'] and random.random() <.5:
             ch = random.randrange(3)
-            shift_x = random.randrange(21)-10
-            shift_y = random.randrange(21)-10
+            shift_x = random.randrange(21)-5
+            shift_y = random.randrange(21)-5
             rgb[...,ch] = np.roll(rgb[...,ch], shift_x, axis=1)
             rgb[...,ch] = np.roll(rgb[...,ch], shift_y, axis=0)
+            
+        if rgb is not None and self.kwargs['color_jitter'] and random.random() <.5:
+            nw = np.random.randint(200, 310, size=(3,))
+            rgb = rgb*(nw/255.) # shift white point
+            rgb += np.random.randint(-25, 25, size=(3,)) # add random color shift
+            rgb = np.round(np.clip(rgb, a_min=0, a_max=255)).astype(np.uint8)
+            
+        if self.kwargs['flip'] and random.random() <.5:
+            if rgb is not None: rgb = (rgb[:,::-1,...]).copy()
+            if gt is not None: gt = (gt[:,::-1,...]).copy()
+            if depth is not None: depth = (depth[:,::-1,...]).copy()
+    
+        if rgb is not None and self.kwargs['gaussian_blur'] and random.random() <.5:
+            sigma = random.random()*self.kwargs['blur_mul']
+            rgb = cv.GaussianBlur(rgb, (0,0), sigma)
             
         return rgb, gt, depth
 

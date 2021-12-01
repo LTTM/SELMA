@@ -57,21 +57,50 @@ def init_params():
     argparser.add_argument('--dataset', default="gta", type=parse_dataset,
                            choices=[LTTMDataset, CityDataset, GTAVDataset, IDDDataset, MapillaryDataset],
                            help="The dataset used for supervised training, choose from ['lttm', 'city', 'gta', 'idd', 'mapi']")
-    argparser.add_argument('--rescale_size', default=[1280,720], type=str2intlist,
+    argparser.add_argument('--target_dataset', default="city", type=parse_dataset,
+                           choices=[LTTMDataset, CityDataset, GTAVDataset, IDDDataset, MapillaryDataset],
+                           help="The dataset used as target, choose from ['lttm', 'city', 'gta', 'idd', 'mapi']")
+                           
+    argparser.add_argument('--rescale_size', default=[1280,''], type=str2intlist,
                            help='Size the images will be resized to during loading, before crop - syntax:"1280,720"')
+    argparser.add_argument('--target_rescale_size', default=[1280,''], type=str2intlist,
+                           help='Size the images will be resized to during loading, before crop - syntax:"1280,720"')
+
     argparser.add_argument('--crop_images', default=False, type=str2bool,
                            help='Whether to crop the images or not')
+    argparser.add_argument('--target_crop_images', default=False, type=str2bool,
+                           help='Whether to crop the images or not')
+
     argparser.add_argument('--crop_size', default=[512,512], type=str2intlist,
                            help='Size the images will be cropped to - syntax:"1280,720"')
+    argparser.add_argument('--target_crop_size', default=[512,512], type=str2intlist,
+                           help='Size the images will be cropped to - syntax:"1280,720"')
+
     argparser.add_argument('--root_path', type=str, help='Path to the dataset root folder')
+    argparser.add_argument('--target_root_path', type=str, help='Path to the dataset root folder')
+
+
     argparser.add_argument('--splits_path', type=str, help='Path to the dataset split lists')
+    argparser.add_argument('--target_splits_path', type=str, help='Path to the dataset split lists')
+
     argparser.add_argument('--train_split', default='train', type=str,
                            help='Split file to be used for training samples')
+    argparser.add_argument('--target_train_split', default='train', type=str,
+                           help='Split file to be used for training samples')
+
     argparser.add_argument('--val_split', default='val', type=str,
                            help='Split file to be used for validation samples')
+    argparser.add_argument('--target_val_split', default='val', type=str,
+                           help='Split file to be used for validation samples')
+
     argparser.add_argument('--test_split', default='test', type=str,
                            help='Split file to be used for test samples')
+    argparser.add_argument('--target_test_split', default='test', type=str,
+                           help='Split file to be used for test samples')
+
     argparser.add_argument('--sensors', default='rgb,semantic', type=str2intlist,
+                           help='Sensors to be used - syntax:"sen1,sen2,..."')
+    argparser.add_argument('--target_sensors', default='rgb,semantic', type=str2intlist,
                            help='Sensors to be used - syntax:"sen1,sen2,..."')
 
     argparser.add_argument('--positions', default='D', type=str2intlist,
@@ -95,10 +124,12 @@ def init_params():
     argparser.add_argument('--noise_mul', default=20, type=int)
     argparser.add_argument('--color_shift', default=True, type=str2bool,
                            help='Whether to randomly shift color channels')
+    argparser.add_argument('--color_jitter', default=True, type=str2bool,
+                           help='Whether to jitter color channels')
 
     argparser.add_argument('--batch_size', default=1, type=int,
                            help='Training batch size')
-    argparser.add_argument('--dataloader_workers', default=4, type=int,
+    argparser.add_argument('--dataloader_workers', default=8, type=int,
                            help='Number of workers to use for each dataloader (significantly affects RAM consumption)')
     argparser.add_argument('--pin_memory', default=False, type=str2bool)
     
@@ -119,7 +150,9 @@ def init_params():
                                help='SGD optimizer momentum')
     argparser.add_argument('--weight_decay', default=1e-4, type=float,
                            help='SGD optimizer weight decay')
-                           
+
+    argparser.add_argument('--validate_on_target', default=False, type=str2bool,
+                           help='Whether to also validate on target dataset')
     argparser.add_argument('--validate_every_steps', default=2500, type=int,
                        help='Number of iterations every which a validation is run, <= 0 disables validation')
     argparser.add_argument('--logdir', default="log/%d"%(int(time.time())), type=str,

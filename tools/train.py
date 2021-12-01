@@ -48,6 +48,7 @@ class Trainer():
                                  gaussian_noise=args.gaussian_noise,
                                  noise_mul=args.noise_mul,
                                  color_shift=args.color_shift,
+                                 color_jitter=args.color_jitter,
                                  sensors=args.sensors,
                                  town=args.town,
                                  weather=args.weather,
@@ -79,6 +80,26 @@ class Trainer():
                                        pin_memory=args.pin_memory)
 
         self.args.validate_every_steps = min(self.args.validate_every_steps, len(self.tset)//args.batch_size)
+        
+        
+        if args.validate_on_target:
+            self.tvset = args.target_dataset(root_path=args.target_root_path,
+                                             splits_path=args.target_splits_path,
+                                             split=args.target_val_split,
+                                             resize_to=args.target_rescale_size,
+                                             crop_to=None,
+                                             augment_data=False,
+                                             sensors=args.target_sensors,
+                                             town=args.town,
+                                             weather=args.weather,
+                                             time_of_day=args.time_of_day,
+                                             sensors_positions=args.positions)
+            self.tvloader = data.DataLoader(self.tvset,
+                                             shuffle=False,
+                                             num_workers=args.dataloader_workers,
+                                             batch_size=1,
+                                             drop_last=True,
+                                             pin_memory=args.pin_memory)
 
         # to be changed when support to different class sets is added
         self.model = SegmentationModel(19, args.classifier)
@@ -93,6 +114,10 @@ class Trainer():
 
         self.best_miou = -1
         self.best_epoch = -1
+        
+        if self.args.validate_on_target:
+            self.target_best_miou = -1
+            self.target_best_epoch = -1
 
     def train(self):
         epochs = int(np.ceil(self.args.iterations/self.args.validate_every_steps))
@@ -100,6 +125,7 @@ class Trainer():
             self.logger.info("Starting epoch %d of %d"%(epoch+1, epochs))
             self.train_epoch(epoch)
             torch.save(self.model.state_dict(), os.path.join(self.args.logdir, "latest.pth"))
+            
             miou = self.validate(epoch)
             self.logger.info("Validation score at epoch %d is %.2f"%(epoch+1, miou))
             self.writer.add_scalar('val_mIoU', miou, epoch+1)
@@ -108,10 +134,18 @@ class Trainer():
                 self.best_epoch = epoch
                 torch.save(self.model.state_dict(), os.path.join(self.args.logdir, "val_best.pth"))
             self.logger.info("Best validation score is %.2f at epoch %d"%(self.best_miou, self.best_epoch+1))
+            if self.args.validate_on_target:
+                miou = self.validate_target(epoch)
+                self.logger.info("Target Validation score at epoch %d is %.2f"%(epoch+1, miou))
+                self.writer.add_scalar('val_target_mIoU', miou, epoch+1)
+                if miou > self.target_best_miou:
+                    self.target_best_miou = miou
+                    self.target_best_epoch = epoch
+                    torch.save(self.model.state_dict(), os.path.join(self.args.logdir, "val_target_best.pth"))
+                self.logger.info("Best target validation score is %.2f at epoch %d"%(self.target_best_miou, self.target_best_epoch+1))
 
     def train_epoch(self, epoch):
-        it = iter(self.tloader)
-        pbar = tqdm(it, total=self.args.validate_every_steps, desc="Training Epoch %d"%(epoch+1))
+        pbar = tqdm(self.tloader, total=self.args.validate_every_steps, desc="Training Epoch %d"%(epoch+1))
         metrics = Metrics(self.tset.cnames)
         for i, sample in enumerate(pbar):
             
@@ -153,8 +187,7 @@ class Trainer():
         self.logger.info("Epoch %d done, score: %.2f -- Starting Validation"%(epoch+1, miou))
         
     def validate(self, epoch):
-        it = iter(self.vloader)
-        pbar = tqdm(it, total=len(self.vset), desc="Validation")
+        pbar = tqdm(self.vloader, total=len(self.vset), desc="Validation")
         metrics = Metrics(self.tset.cnames)
         self.model.eval()
         with torch.no_grad():
@@ -173,6 +206,30 @@ class Trainer():
         self.writer.add_image("val_input", self.tset.to_rgb(x[0].cpu()), epoch+1, dataformats='HWC')
         self.writer.add_image("val_label", self.tset.color_label(y[0].cpu()), epoch+1, dataformats='HWC')
         self.writer.add_image("val_pred", self.tset.color_label(pred[0].cpu()), epoch+1, dataformats='HWC')
+
+        self.model.train()
+        return metrics.percent_mIoU()
+        
+    def validate_target(self, epoch):
+        pbar = tqdm(self.tvloader, total=len(self.tvset), desc="Validation")
+        metrics = Metrics(self.tset.cnames)
+        self.model.eval()
+        with torch.no_grad():
+            for i, sample in enumerate(pbar):
+
+                x, y = sample[0]['rgb'], sample[0]['semantic']
+                x = x['D'].to('cuda', dtype=torch.float32) if type(x) is dict else x.to('cuda', dtype=torch.float32)
+                y = y['D'].to('cuda', dtype=torch.long) if type(y) is dict else y.to('cuda', dtype=torch.long)
+                
+                out = self.model(x)
+                if type(out) is tuple:
+                    out, feats = out
+                pred = torch.argmax(out.detach(), dim=1)
+                metrics.add_sample(pred, y)
+
+        self.writer.add_image("val_target_input", self.tvset.to_rgb(x[0].cpu()), epoch+1, dataformats='HWC')
+        self.writer.add_image("val_target_label", self.tvset.color_label(y[0].cpu()), epoch+1, dataformats='HWC')
+        self.writer.add_image("val_target_pred", self.tvset.color_label(pred[0].cpu()), epoch+1, dataformats='HWC')
 
         self.model.train()
         return metrics.percent_mIoU()
