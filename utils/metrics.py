@@ -1,9 +1,13 @@
 import torch
 
+from utils.cnames import names_dict
+from utils.idsmask import ids_dict
+
 class Metrics:
-    def __init__(self, name_classes, log_colors=False, device='cuda'):
-        self.name_classes = name_classes
-        self.num_classes = len(name_classes)
+    def __init__(self, class_set, log_colors=False, device='cuda'):
+        self.class_set = class_set
+        self.name_classes = names_dict[class_set]
+        self.num_classes = len(self.name_classes)
         self.log_colors = log_colors
         self.device = device
         self.confusion_matrix = torch.zeros(self.num_classes, self.num_classes, dtype=torch.long, device=device)
@@ -35,18 +39,19 @@ class Metrics:
         # Intersection over Union = TP/(TP+FP+FN)
         return torch.diagonal(self.confusion_matrix)/(self.confusion_matrix.sum(dim=1)+self.confusion_matrix.sum(dim=0)-torch.diagonal(self.confusion_matrix))
 
-    def percent_mIoU(self):
-        return 100*self.nanmean(self.IoU())
+    def percent_mIoU(self, target_class_set=None):
+        keep_ids = ids_dict[self.class_set][target_class_set] if target_class_set is not None else None
+        return 100*self.nanmean(self.IoU(), keep_ids)
 
     @staticmethod
-    def nanmean(tensor):
-        m = torch.isnan(tensor)
-        return torch.mean(tensor[~m])
+    def nanmean(tensor, keep_ids=None):
+        m = torch.isnan(tensor[keep_ids]) if keep_ids is not None else torch.isnan(tensor)
+        return torch.mean(tensor[keep_ids][~m])if keep_ids is not None else torch.mean(tensor[~m])
         
     @staticmethod
-    def nanstd(tensor):
-        m = torch.isnan(tensor)
-        return torch.std(tensor[~m])
+    def nanstd(tensor, keep_ids=None):
+        m = torch.isnan(tensor[keep_ids]) if keep_ids is not None else torch.isnan(tensor)
+        return torch.std(tensor[keep_ids][~m])if keep_ids is not None else torch.std(tensor[~m])
         
     def color_tuple(self, val, c):
         return (self.color_dict[c], val, '\033[0m')
@@ -60,15 +65,25 @@ class Metrics:
         if val < mean+std:
             return 'green'
         return 'cyan'
+        
+    def str_class_set(self, target_class_set=None):
+        return self.__str__(target_class_set)
     
-    def __str__(self):
+    def __str__(self, target_class_set=None):
         out = "="*39+'\n'
         out += "  Class\t\t PA %\t PP %\t IoU%\n"
         out += "-"*39+'\n'
+        
+        keep_ids = ids_dict[self.class_set][target_class_set] if target_class_set is not None else None
+            
+        
         pa, pp, iou = 100*self.PA(), 100*self.PP(), 100*self.IoU()
-        mpa, mpp, miou = self.nanmean(pa), self.nanmean(pp), self.nanmean(iou)
-        spa, spp, siou = self.nanstd(pa), self.nanstd(pp), self.nanstd(iou)
+        mpa, mpp, miou = self.nanmean(pa, keep_ids), self.nanmean(pp, keep_ids), self.nanmean(iou, keep_ids)
+        spa, spp, siou = self.nanstd(pa, keep_ids), self.nanstd(pp, keep_ids), self.nanstd(iou, keep_ids)
         for i, n in enumerate(self.name_classes):
+            if target_class_set is not None:
+                if i not in keep_ids:
+                    continue
             npa, npp, niou = pa[i], pp[i], iou[i]
             pad = "" if len(n) >= 6 else "\t"
             if self.log_colors:

@@ -9,6 +9,7 @@ from torch.nn import CrossEntropyLoss
 from torch.utils import data
 from tqdm import tqdm
 
+from utils.idsmask import ids_dict
 from utils.argparser import init_params, init_logger
 from utils.metrics import Metrics
 from models.model import SegmentationModel
@@ -29,7 +30,8 @@ class Tester():
                                  town=args.town,
                                  weather=args.weather,
                                  time_of_day=args.time_of_day,
-                                 sensors_positions=args.positions)
+                                 sensors_positions=args.positions,
+                                 class_set=args.class_set)
         self.tloader = data.DataLoader(self.tset,
                                        shuffle=False,
                                        num_workers=args.dataloader_workers,
@@ -38,8 +40,11 @@ class Tester():
                                        pin_memory=args.pin_memory)
 
         
-        # to be changed when support to different class sets is added
-        self.model = SegmentationModel(19, args.classifier)
+        num_classes = len(self.tset.cnames)
+        self.logger.info("Training on class set: %s, Classes: %d"%(args.class_set, num_classes))
+        
+        self.model = SegmentationModel(num_classes, args.classifier)
+        self.model.to('cuda')
         assert os.path.exists(args.ckpt_file), "Checkpoint [%s] not found, aborting..."%(args.ckpt_file)
         
         self.logger.info("Loading checkpoint")
@@ -50,7 +55,7 @@ class Tester():
         
     def test(self):
         pbar = tqdm(self.tloader, total=len(self.tset), desc="Testing")
-        metrics = Metrics(self.tset.cnames, log_colors=True)
+        metrics = Metrics(self.args.class_set, log_colors=True)
         self.model.eval()
         with torch.no_grad():
             for i, sample in enumerate(pbar):
@@ -68,8 +73,12 @@ class Tester():
         self.writer.add_image("test_input", self.tset.to_rgb(x[0].cpu()), 0, dataformats='HWC')
         self.writer.add_image("test_label", self.tset.color_label(y[0].cpu()), 0, dataformats='HWC')
         self.writer.add_image("test_pred", self.tset.color_label(pred[0].cpu()), 0, dataformats='HWC')
-        self.writer.add_scalar("test_mIoU", metrics.percent_mIoU(), 0)
-        self.logger.info("\n"+str(metrics))
+        
+        self.logger.info("Evaluation on Class Set: %s\n"%self.args.class_set + str(metrics))
+        self.writer.add_scalar("test_mIoU_%s"%self.args.class_set, metrics.percent_mIoU(), 0)
+        for cset in ids_dict[self.args.class_set]:
+            self.writer.add_scalar("test_mIoU_%s"%cset, metrics.percent_mIoU(cset), 0)
+            self.logger.info("Evaluation on Class Set: %s\n"%cset + metrics.str_class_set(cset))
 
 if __name__ == "__main__":
     

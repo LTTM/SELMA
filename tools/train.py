@@ -10,8 +10,6 @@ torch.backends.cudnn.benchmark = True
 from torch.nn import CrossEntropyLoss
 from torch.utils import data
 from tqdm import tqdm
-import time
-import gc
 from utils.argparser import init_params, init_logger
 from utils.metrics import Metrics
 from models.model import SegmentationModel
@@ -140,10 +138,10 @@ class Trainer():
                 self.best_epoch = epoch
                 torch.save(self.model.state_dict(), os.path.join(self.args.logdir, "val_best.pth"))
             self.logger.info("Best validation score is %.2f at epoch %d"%(self.best_miou, self.best_epoch+1))
+            
             if self.args.validate_on_target:
                 miou = self.validate_target(epoch)
                 self.logger.info("Target Validation score at epoch %d is %.2f"%(epoch+1, miou))
-                self.writer.add_scalar('val_target_mIoU', miou, epoch+1)
                 if miou > self.target_best_miou:
                     self.target_best_miou = miou
                     self.target_best_epoch = epoch
@@ -152,7 +150,7 @@ class Trainer():
 
     def train_epoch(self, epoch):
         pbar = tqdm(self.tloader, total=self.args.validate_every_steps, desc="Training Epoch %d"%(epoch+1))
-        metrics = Metrics(self.tset.cnames)
+        metrics = Metrics(self.args.class_set)
         for i, sample in enumerate(pbar):
             
             curr_iter = self.args.validate_every_steps*epoch + i
@@ -194,7 +192,7 @@ class Trainer():
         
     def validate(self, epoch):
         pbar = tqdm(self.vloader, total=len(self.vset), desc="Validation")
-        metrics = Metrics(self.tset.cnames)
+        metrics = Metrics(self.args.class_set)
         self.model.eval()
         with torch.no_grad():
             for i, sample in enumerate(pbar):
@@ -212,13 +210,16 @@ class Trainer():
         self.writer.add_image("val_input", self.tset.to_rgb(x[0].cpu()), epoch+1, dataformats='HWC')
         self.writer.add_image("val_label", self.tset.color_label(y[0].cpu()), epoch+1, dataformats='HWC')
         self.writer.add_image("val_pred", self.tset.color_label(pred[0].cpu()), epoch+1, dataformats='HWC')
+        
+        miou = metrics.percent_mIoU()
+        self.writer.add_scalar('val_target_mIoU', miou, epoch+1)
 
         self.model.train()
-        return metrics.percent_mIoU()
+        return 
         
     def validate_target(self, epoch):
         pbar = tqdm(self.tvloader, total=len(self.tvset), desc="Validation")
-        metrics = Metrics(self.tset.cnames)
+        metrics = Metrics(self.args.class_set)
         self.model.eval()
         with torch.no_grad():
             for i, sample in enumerate(pbar):

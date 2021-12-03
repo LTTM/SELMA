@@ -123,3 +123,6 @@ cci12 = ["road",
        "car",
        "motorbike",
        "bycicle"]
+
+
+names_dict = {'city19':city19, 'idd17':idd17, 'synthia16':synthia16, 'idda16':idda16, 'sii15':sii15, 'crosscity13':crosscity13, 'cci12':cci12}

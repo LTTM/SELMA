@@ -1,0 +1,9 @@
+python tools/label_frequency.py --dataset "idd" --root_path "F:/Dataset/IDD" --splits_path "F:/Dataset/IDD" --class_set "idd17"
+
+python tools/label_frequency.py --dataset "gta" --root_path "F:/Dataset/GTA/full" --splits_path "F:/Dataset/GTA/full"
+
+python tools/label_frequency.py --dataset "lttm" --root_path "D:/Datasets/CarlaLTTM" --splits_path "D:/Datasets/CarlaLTTM/splits" --train_split "train_mc" --val_split "val_mc" --test_split "test_mc" --time_of_day "noon"
+
+python tools/label_frequency.py --dataset "idda" --root_path "D:/Datasets/IDDAbest" --splits_path "D:/Datasets/IDDAbest" --class_set "idda16"
+
+python tools/label_frequency.py --dataset "city" --root_path "F:/Dataset/Cityscapes_extra" --splits_path "F:/Dataset/Cityscapes_extra"
