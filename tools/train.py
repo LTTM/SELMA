@@ -10,6 +10,8 @@ torch.backends.cudnn.benchmark = True
 from torch.nn import CrossEntropyLoss
 from torch.utils import data
 from tqdm import tqdm
+
+from utils.idsmask import ids_dict
 from utils.argparser import init_params, init_logger
 from utils.metrics import Metrics
 from models.model import SegmentationModel
@@ -210,12 +212,9 @@ class Trainer():
         self.writer.add_image("val_input", self.tset.to_rgb(x[0].cpu()), epoch+1, dataformats='HWC')
         self.writer.add_image("val_label", self.tset.color_label(y[0].cpu()), epoch+1, dataformats='HWC')
         self.writer.add_image("val_pred", self.tset.color_label(pred[0].cpu()), epoch+1, dataformats='HWC')
-        
-        miou = metrics.percent_mIoU()
-        self.writer.add_scalar('val_target_mIoU', miou, epoch+1)
 
         self.model.train()
-        return 
+        return metrics.percent_mIoU()
         
     def validate_target(self, epoch):
         pbar = tqdm(self.tvloader, total=len(self.tvset), desc="Validation")
@@ -237,9 +236,14 @@ class Trainer():
         self.writer.add_image("val_target_input", self.tvset.to_rgb(x[0].cpu()), epoch+1, dataformats='HWC')
         self.writer.add_image("val_target_label", self.tvset.color_label(y[0].cpu()), epoch+1, dataformats='HWC')
         self.writer.add_image("val_target_pred", self.tvset.color_label(pred[0].cpu()), epoch+1, dataformats='HWC')
+        
+        miou = metrics.percent_mIoU()
+        self.writer.add_scalar('val_target_mIoU_%s'%self.args.class_set, miou, epoch+1)
+        for cset in ids_dict[self.args.class_set]:
+            self.writer.add_scalar("val_target_mIoU_%s"%cset, metrics.percent_mIoU(cset), epoch+1)
 
         self.model.train()
-        return metrics.percent_mIoU()
+        return miou
 
 if __name__ == "__main__":
     

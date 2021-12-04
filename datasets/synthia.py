@@ -1,5 +1,5 @@
 import numpy as np
-from PIL import Image
+import imageio
 from datasets.cityscapes import CityDataset
 
 class SYNTHIADataset(CityDataset):
