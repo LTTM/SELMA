@@ -2,5 +2,5 @@
 **/*.pth
 **/__pycache__
 logs
+evals
 old_logs
-log

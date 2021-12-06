@@ -252,7 +252,7 @@ class Trainer():
 
 if __name__ == "__main__":
     
-    args = init_params('train')
+    args = init_params('source')
     writer, logger = init_logger(args)
     
     set_seed(args.seed)
