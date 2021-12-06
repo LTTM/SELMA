@@ -8,6 +8,8 @@ import torch
 torch.backends.cudnn.benchmark = True
 
 from torch.nn import CrossEntropyLoss
+from utils.losses import MSIW
+
 from torch.utils import data
 from tqdm import tqdm
 
@@ -84,7 +86,7 @@ class Trainer():
         self.args.validate_every_steps = min(self.args.validate_every_steps, len(self.tset)//args.batch_size)
         
         
-        if args.validate_on_target:
+        if hasattr(args, 'validate_on_target') and args.validate_on_target:
             self.tvset = args.target_dataset(root_path=args.target_root_path,
                                              splits_path=args.target_splits_path,
                                              split=args.target_val_split,
@@ -114,14 +116,17 @@ class Trainer():
         self.optim = torch.optim.SGD(params=self.model.parameters_dict,
                                      momentum=self.args.momentum,
                                      weight_decay=self.args.weight_decay)
-                                     
-        self.loss = CrossEntropyLoss(ignore_index=-1)
+        
+        if self.args.sup_loss == 'ce':
+            self.loss = CrossEntropyLoss(ignore_index=-1)
+        elif self.args.sup_loss == 'msiw':
+            self.loss = MSIW(self.args.alpha_msiw, ignore_index=-1)
         self.loss.to('cuda')
 
         self.best_miou = -1
         self.best_epoch = -1
         
-        if self.args.validate_on_target:
+        if hasattr(args, 'validate_on_target') and self.args.validate_on_target:
             self.target_best_miou = -1
             self.target_best_epoch = -1
 
@@ -141,7 +146,7 @@ class Trainer():
                 torch.save(self.model.state_dict(), os.path.join(self.args.logdir, "val_best.pth"))
             self.logger.info("Best validation score is %.2f at epoch %d"%(self.best_miou, self.best_epoch+1))
             
-            if self.args.validate_on_target:
+            if hasattr(args, 'validate_on_target') and self.args.validate_on_target:
                 miou = self.validate_target(epoch)
                 self.logger.info("Target Validation score at epoch %d is %.2f"%(epoch+1, miou))
                 if miou > self.target_best_miou:
@@ -170,7 +175,7 @@ class Trainer():
                 out, feats = out
             l = self.loss(out, y)
             l.backward()
-            self.writer.add_scalar('ce', l.item(), curr_iter)
+            self.writer.add_scalar('sup_loss', l.item(), curr_iter)
             
             pred = torch.argmax(out.detach(), dim=1)
             metrics.add_sample(pred, y)
@@ -247,7 +252,7 @@ class Trainer():
 
 if __name__ == "__main__":
     
-    args = init_params()
+    args = init_params('train')
     writer, logger = init_logger(args)
     
     set_seed(args.seed)

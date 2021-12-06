@@ -2,4 +2,5 @@
 **/*.pth
 **/__pycache__
 logs
+old_logs
 log

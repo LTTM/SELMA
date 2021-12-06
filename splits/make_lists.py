@@ -26,7 +26,7 @@ train_rand = open("train_rand.csv", 'w')
 train_rand.write(','.join(header)+'\n')
 val_rand = open("val_rand.csv", 'w')
 val_rand.write(','.join(header)+'\n')
-test_rand = open("val_rand.csv", 'w')
+test_rand = open("test_rand.csv", 'w')
 test_rand.write(','.join(header)+'\n')
 
 train_mc = open("train_mc.csv", 'w')

@@ -56,53 +56,53 @@ def parse_dataset(dname):
     else:
         return MapillaryDataset
 
-def init_params():
+def init_params(train_type='source'):
 
     argparser = argparse.ArgumentParser()
 
-    argparser.add_argument('--dataset', default="gta", type=parse_dataset,
-                           choices=[LTTMDataset, CityDataset, GTAVDataset, IDDDataset, IDDADataset, SYNTHIADataset, MapillaryDataset],
-                           help="The dataset used for supervised training, choose from ['lttm', 'city', 'gta', 'idd', 'mapi']")
-    argparser.add_argument('--target_dataset', default="city", type=parse_dataset,
-                           choices=[LTTMDataset, CityDataset, GTAVDataset, IDDDataset, MapillaryDataset],
-                           help="The dataset used as target, choose from ['lttm', 'city', 'gta', 'idd', 'mapi']")
-                           
-    argparser.add_argument('--rescale_size', default=[1280,''], type=str2intlist,
-                           help='Size the images will be resized to during loading, before crop - syntax:"1280,720"')
-    argparser.add_argument('--target_rescale_size', default=[1280,''], type=str2intlist,
-                           help='Size the images will be resized to during loading, before crop - syntax:"1280,720"')
+    if train_type in ['source', 'uda', 'uda_fs']:
+        argparser.add_argument('--dataset', default="gta", type=parse_dataset,
+                               choices=[LTTMDataset, CityDataset, GTAVDataset, IDDDataset, IDDADataset, SYNTHIADataset, MapillaryDataset],
+                               help="The dataset used for supervised training, choose from ['lttm', 'city', 'gta', 'idd', 'mapi']")
+        argparser.add_argument('--target_dataset', default="city", type=parse_dataset,
+                               choices=[LTTMDataset, CityDataset, GTAVDataset, IDDDataset, MapillaryDataset],
+                               help="The dataset used as target, choose from ['lttm', 'city', 'gta', 'idd', 'mapi']")
+                               
+        argparser.add_argument('--rescale_size', default=[1280,''], type=str2intlist,
+                               help='Size the images will be resized to during loading, before crop - syntax:"1280,720"')
+        argparser.add_argument('--target_rescale_size', default=[1280,''], type=str2intlist,
+                               help='Size the images will be resized to during loading, before crop - syntax:"1280,720"')
 
-    argparser.add_argument('--crop_images', default=False, type=str2bool,
-                           help='Whether to crop the images or not')
-    argparser.add_argument('--target_crop_images', default=False, type=str2bool,
-                           help='Whether to crop the images or not')
+        argparser.add_argument('--crop_images', default=False, type=str2bool,
+                               help='Whether to crop the images or not')
+        argparser.add_argument('--target_crop_images', default=False, type=str2bool,
+                               help='Whether to crop the images or not')
 
-    argparser.add_argument('--crop_size', default=[512,512], type=str2intlist,
-                           help='Size the images will be cropped to - syntax:"1280,720"')
-    argparser.add_argument('--target_crop_size', default=[512,512], type=str2intlist,
-                           help='Size the images will be cropped to - syntax:"1280,720"')
+        argparser.add_argument('--crop_size', default=[512,512], type=str2intlist,
+                               help='Size the images will be cropped to - syntax:"1280,720"')
+        argparser.add_argument('--target_crop_size', default=[512,512], type=str2intlist,
+                               help='Size the images will be cropped to - syntax:"1280,720"')
 
-    argparser.add_argument('--root_path', type=str, help='Path to the dataset root folder')
-    argparser.add_argument('--target_root_path', type=str, help='Path to the dataset root folder')
+        argparser.add_argument('--root_path', type=str, help='Path to the dataset root folder')
+        argparser.add_argument('--target_root_path', type=str, help='Path to the dataset root folder')
 
 
-    argparser.add_argument('--splits_path', type=str, help='Path to the dataset split lists')
-    argparser.add_argument('--target_splits_path', type=str, help='Path to the dataset split lists')
+        argparser.add_argument('--splits_path', type=str, help='Path to the dataset split lists')
+        argparser.add_argument('--target_splits_path', type=str, help='Path to the dataset split lists')
 
-    argparser.add_argument('--train_split', default='train', type=str,
-                           help='Split file to be used for training samples')
-    argparser.add_argument('--target_train_split', default='train', type=str,
-                           help='Split file to be used for training samples')
+        argparser.add_argument('--train_split', default='train', type=str,
+                               help='Split file to be used for training samples')
+        argparser.add_argument('--target_train_split', default='train', type=str,
+                               help='Split file to be used for training samples')
 
-    argparser.add_argument('--val_split', default='val', type=str,
-                           help='Split file to be used for validation samples')
-    argparser.add_argument('--target_val_split', default='val', type=str,
-                           help='Split file to be used for validation samples')
+        argparser.add_argument('--val_split', default='val', type=str,
+                               help='Split file to be used for validation samples')
+        argparser.add_argument('--target_val_split', default='val', type=str,
+                               help='Split file to be used for validation samples')
 
-    argparser.add_argument('--test_split', default='test', type=str,
-                           help='Split file to be used for test samples')
-    argparser.add_argument('--target_test_split', default='test', type=str,
-                           help='Split file to be used for test samples')
+    if train_type in ['test']:
+        argparser.add_argument('--test_split', default='test', type=str,
+                               help='Split file to be used for test samples')
 
     argparser.add_argument('--sensors', default='rgb,semantic', type=str2intlist,
                            help='Sensors to be used - syntax:"sen1,sen2,..."')
@@ -120,20 +120,22 @@ def init_params():
 
     argparser.add_argument('--class_set', default='city19', type=str,
                            help='Which class set to use.', choices=['city19', 'idd17', 'synthia16', 'idda16', 'sii15', 'crosscity13', 'cci12'])
-    argparser.add_argument('--augment_data', default=True, type=str2bool,
-                           help='Whether to augment the (training) images with flip & Gaussian Blur')
-    argparser.add_argument('--random_flip', default=True, type=str2bool,
-                           help='Whether to randomly flip images l/r')
-    argparser.add_argument('--gaussian_blur', default=True, type=str2bool,
-                           help='Whether to apply random gaussian blurring')
-    argparser.add_argument('--blur_mul', default=5, type=int)
-    argparser.add_argument('--gaussian_noise', default=True, type=str2bool,
-                           help='Whether to apply random gaussian noise')
-    argparser.add_argument('--noise_mul', default=20, type=int)
-    argparser.add_argument('--color_shift', default=True, type=str2bool,
-                           help='Whether to randomly shift color channels')
-    argparser.add_argument('--color_jitter', default=True, type=str2bool,
-                           help='Whether to jitter color channels')
+
+    if train_type in ['source', 'uda', 'uda_fs']:
+        argparser.add_argument('--augment_data', default=True, type=str2bool,
+                               help='Whether to augment the (training) images with flip & Gaussian Blur')
+        argparser.add_argument('--random_flip', default=True, type=str2bool,
+                               help='Whether to randomly flip images l/r')
+        argparser.add_argument('--gaussian_blur', default=True, type=str2bool,
+                               help='Whether to apply random gaussian blurring')
+        argparser.add_argument('--blur_mul', default=5, type=int)
+        argparser.add_argument('--gaussian_noise', default=True, type=str2bool,
+                               help='Whether to apply random gaussian noise')
+        argparser.add_argument('--noise_mul', default=20, type=int)
+        argparser.add_argument('--color_shift', default=True, type=str2bool,
+                               help='Whether to randomly shift color channels')
+        argparser.add_argument('--color_jitter', default=True, type=str2bool,
+                               help='Whether to jitter color channels')
 
     argparser.add_argument('--batch_size', default=1, type=int,
                            help='Training batch size')
@@ -146,27 +148,41 @@ def init_params():
                            help='Which classifier head to use in the model')
     argparser.add_argument('--seed', default=12345, type=int,
                                help='Seed for the RNGs, for repeatability')
-    argparser.add_argument('--lr', default=2.5e-4, type=float,
-                           help='The learning rate to be used')
-    argparser.add_argument('--poly_power', default=.9, type=float,
-                               help='lr polynomial decay rate')
-    argparser.add_argument('--decay_over_iterations', default=250000, type=int,
-                           help='lr polynomial decay max_steps')
-    argparser.add_argument('--iterations', default=50000, type=int,
-                           help='Number of iterations performed')
-    argparser.add_argument('--momentum', default=.9, type=float,
-                               help='SGD optimizer momentum')
-    argparser.add_argument('--weight_decay', default=1e-4, type=float,
-                           help='SGD optimizer weight decay')
+   
+    if train_type in ['source', 'uda', 'uda_fs']:
+        argparser.add_argument('--sup_loss', default='ce', type=str, choices=['ce', 'msiw'],
+                               help='The supervised loss to be used for optimimization')
+        argparser.add_argument('--alpha_msiw', default=2e-1, type=float,
+                               help='MaxSquareIW alpha coefficient')
+        argparser.add_argument('--lr', default=2.5e-4, type=float,
+                               help='The learning rate to be used')
+        argparser.add_argument('--poly_power', default=.9, type=float,
+                                   help='lr polynomial decay rate')
+        argparser.add_argument('--decay_over_iterations', default=250000, type=int,
+                               help='lr polynomial decay max_steps')
+        argparser.add_argument('--iterations', default=50000, type=int,
+                               help='Number of iterations performed')
+        argparser.add_argument('--momentum', default=.9, type=float,
+                                   help='SGD optimizer momentum')
+        argparser.add_argument('--weight_decay', default=1e-4, type=float,
+                               help='SGD optimizer weight decay')
+        argparser.add_argument('--validate_every_steps', default=2500, type=int,
+                               help='Number of iterations every which a validation is run, <= 0 disables validation')
 
-    argparser.add_argument('--validate_on_target', default=False, type=str2bool,
-                           help='Whether to also validate on target dataset')
-    argparser.add_argument('--validate_every_steps', default=2500, type=int,
-                       help='Number of iterations every which a validation is run, <= 0 disables validation')
+    if train_type in ['source']:
+        argparser.add_argument('--validate_on_target', default=False, type=str2bool,
+                               help='Whether to also validate on target dataset')
+
     argparser.add_argument('--logdir', default="log/%d"%(int(time.time())), type=str,
                    help='Path to the log directory')
-    argparser.add_argument('--ckpt_file', default=None, type=str,
-                   help='Path to the model checkpoint, used in test script')
+
+    if train_type in ['uda', 'test']:
+        argparser.add_argument('--ckpt_file', default=None, type=str,
+                       help='Path to the model checkpoint, used in test script')
+
+    if train_type in ['uda', 'uda_fs']:
+        argparser.add_argument('--lambda_msiw', default=1e-1, type=float,
+                               help='UDA MaxSquareIW loss coefficient')
                    
     return argparser.parse_args()
     

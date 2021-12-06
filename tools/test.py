@@ -82,7 +82,7 @@ class Tester():
 
 if __name__ == "__main__":
     
-    args = init_params()
+    args = init_params('test')
     writer, logger = init_logger(args)
     
     tester = Tester(args, writer, logger)
