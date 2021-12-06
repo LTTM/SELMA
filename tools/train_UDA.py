@@ -55,6 +55,9 @@ class TrainerUDA(Trainer):
                                          
         self.msiw = MSIW(self.args.alpha_msiw)
         self.msiw.to('cuda')
+        
+        self.target_best_miou = -1
+        self.target_best_epoch = -1
 
         if hasattr(args, 'ckpt_file') and args.ckpt_file is not None:
             self.logger.info("Loading checkpoint")
