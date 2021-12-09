@@ -1,6 +1,7 @@
 **/.DS_Store
 **/*.pth
 **/__pycache__
+**/*.bat
 logs
 evals
 old_logs

@@ -13,6 +13,7 @@ from datasets.idda import IDDADataset
 from datasets.synthia import SYNTHIADataset
 from datasets.mapillary import MapillaryDataset
 from datasets.acdc import ACDCDataset
+from datasets.tipnt import TIPNTDataset
 
 def str2bool(v):
     if v.lower() in ('yes', 'true', 't', 'y', '1'):
@@ -56,6 +57,8 @@ def parse_dataset(dname):
         return SYNTHIADataset
     elif dname=='acdc':
         return ACDCDataset
+    elif dname=='tipnt':
+        return TIPNTDataset
     else:
         return MapillaryDataset
 
@@ -65,8 +68,8 @@ def init_params(train_type='source'):
 
     if train_type in ['source', 'uda', 'uda_fs', 'test']:
         argparser.add_argument('--dataset', default="gta", type=parse_dataset,
-                               choices=[LTTMDataset, CityDataset, GTAVDataset, IDDDataset, IDDADataset, SYNTHIADataset, ACDCDataset, MapillaryDataset],
-                               help="The dataset used for supervised training, choose from ['lttm', 'city', 'gta', 'idd', 'synthia', 'acdc', 'mapi']")
+                               choices=[LTTMDataset, CityDataset, GTAVDataset, IDDDataset, IDDADataset, SYNTHIADataset, ACDCDataset, MapillaryDataset, TIPNTDataset],
+                               help="The dataset used for supervised training, choose from ['lttm', 'city', 'gta', 'idd', 'synthia', 'acdc', 'mapi', 'tipnt']")
         argparser.add_argument('--rescale_size', default=[1280,''], type=str2intlist,
                                help='Size the images will be resized to during loading, before crop - syntax:"1280,720"')
         argparser.add_argument('--crop_images', default=False, type=str2bool,
