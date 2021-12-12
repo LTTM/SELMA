@@ -99,6 +99,8 @@ def init_params(train_type='source'):
                                help='Split file to be used for training samples')
         argparser.add_argument('--target_val_split', default='val', type=str,
                                help='Split file to be used for validation samples')
+        argparser.add_argument('--ce_use_weights', default=False, type=str2bool,
+                               help='Whether to use pixel frequencies to normalize the cross-entropy')
         
 
     if train_type in ['test']:
@@ -153,8 +155,6 @@ def init_params(train_type='source'):
     if train_type in ['source', 'uda', 'uda_fs']:
         argparser.add_argument('--sup_loss', default='ce', type=str, choices=['ce', 'msiw'],
                                help='The supervised loss to be used for optimimization')
-        argparser.add_argument('--alpha_msiw', default=2e-1, type=float,
-                               help='MaxSquareIW alpha coefficient')
         argparser.add_argument('--lr', default=2.5e-4, type=float,
                                help='The learning rate to be used')
         argparser.add_argument('--poly_power', default=.9, type=float,
@@ -184,6 +184,10 @@ def init_params(train_type='source'):
     if train_type in ['uda', 'uda_fs']:
         argparser.add_argument('--lambda_msiw', default=1e-1, type=float,
                                help='UDA MaxSquareIW loss coefficient')
+        argparser.add_argument('--alpha_msiw', default=2e-1, type=float,
+                               help='MaxSquareIW alpha coefficient')
+        argparser.add_argument('--beta_msiw', default=0, type=float,
+                               help='MaxSquareIWEX beta coefficient')
                    
     return argparser.parse_args()
     

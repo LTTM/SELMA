@@ -14,6 +14,10 @@ python tools/test.py --dataset "city" --root_path "F:/Dataset/Cityscapes_extra" 
 
  -------------- DATASETS ----------------
 
+python tools/test_dataset.py --dataset "idda" --root_path "D:/Datasets/IDDAbest" --splits_path "D:/Datasets/IDDAbest" --class_set "idda16"
+python tools/test_dataset.py --dataset "gta" --root_path "F:/Dataset/GTA/full" --splits_path "F:/Dataset/GTA/full" --rescale_size "1280," --test_split "val"
+python tools/test_dataset.py --dataset "lttm" --root_path "D:/Datasets/CarlaLTTM" --splits_path "D:/Datasets/CarlaLTTM/splits" --time_of_day "noon" --rescale_size "1280," --test_split "test_mc" --train_split "train_mc" --val_split "val_mc"
+python tools/test_dataset.py --dataset "mapi" --root_path "F:/Dataset/Mapillary" --splits_path "F:/Dataset/Mapillary" --rescale_size "1280,"
 python tools/test_dataset.py --dataset "acdc" --root_path "F:/Dataset/ACDC" --splits_path "F:/Dataset/ACDC" --rescale_size "1280,"
 python tools/test_dataset.py --dataset "city" --root_path "F:/Dataset/Cityscapes_fog" --splits_path "F:/Dataset/Cityscapes_fog" --rescale_size "1280,"
 python tools/test_dataset.py --dataset "city" --root_path "F:/Dataset/Cityscapes_rain" --splits_path "F:/Dataset/Cityscapes_rain" --rescale_size "1280,"

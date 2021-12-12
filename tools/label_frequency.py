@@ -13,7 +13,7 @@ from utils.argparser import init_params
 
 if __name__ == "__main__":
     
-    args = init_params()
+    args = init_params('test')
     
     tset = args.dataset(root_path=args.root_path,
                         splits_path=args.splits_path,
@@ -45,5 +45,5 @@ if __name__ == "__main__":
         counts += torch.bincount(y, minlength=num_classes+1)
         
     print(counts)
-    np.save("logs/frequencies/%s_%s.npy"%(args.dataset.__name__[:-7], args.class_set),
+    np.save("datasets/frequencies/%s_%s.npy"%(args.dataset.__name__[:-7], args.class_set),
             np.roll(counts.detach().cpu().numpy(), -1)) # shift indexes back to -1:num_classes-1

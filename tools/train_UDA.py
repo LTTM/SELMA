@@ -2,7 +2,7 @@ import sys, os
 sys.path.append(os.path.abspath('.'))
 
 from tools.train import *
-from utils.losses import MSIW
+from utils.losses import MSIW, MSIWEX
 
 class TrainerUDA(Trainer):
     def __init__(self, args, writer, logger):
@@ -52,8 +52,14 @@ class TrainerUDA(Trainer):
                                          batch_size=1,
                                          drop_last=True,
                                          pin_memory=args.pin_memory)
-                                         
-        self.msiw = MSIW(self.args.alpha_msiw)
+
+        if self.args.beta_msiw > 0:
+            ws = np.load("datasets/frequencies/%s_%s.npy"%(args.dataset.__name__[:-7], args.class_set))[:-1]
+            ws = ws/ws.sum()
+            self.logger.info("Using MSIWEX-Class Weights:\n"+str(ws))
+            self.msiw = MSIWEX(weights=torch.FloatTensor(ws), alpha=self.args.alpha_msiw, beta=self.args.beta_msiw)
+        else:
+            self.msiw = MSIW(self.args.alpha_msiw)
         self.msiw.to('cuda')
         
         self.target_best_miou = -1

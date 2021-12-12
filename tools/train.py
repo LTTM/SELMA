@@ -117,8 +117,13 @@ class Trainer():
                                      momentum=self.args.momentum,
                                      weight_decay=self.args.weight_decay)
         
+        if self.args.ce_use_weights:
+            ws = np.load("datasets/frequencies/%s_%s.npy"%(args.dataset.__name__[:-7], args.class_set))[:-1]
+            ws = ws.sum()/ws # i.e. 1/(ws/ws.sum())
+            self.logger.info("Using CE-Class Weights:\n"+str(ws))
+        
         if self.args.sup_loss == 'ce':
-            self.loss = CrossEntropyLoss(ignore_index=-1)
+            self.loss = CrossEntropyLoss(ignore_index=-1, weight=torch.FloatTensor(ws) if self.args.ce_use_weights else None)
         elif self.args.sup_loss == 'msiw':
             self.loss = MSIW(self.args.alpha_msiw, ignore_index=-1)
         self.loss.to('cuda')

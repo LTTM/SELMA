@@ -23,15 +23,15 @@ if __name__ == '__main__':
                         sensors_positions=args.positions,
                         class_set=args.class_set)
 
-    for sample, imid in dset:
-        rgb, gt = dset.to_rgb(sample['rgb']), dset.color_label(sample['semantic'])
+    for data in dset:
+        
+        sample, imid = data if type(data) is tuple else data, 0
+        x, y = sample[0]['rgb'], sample[0]['semantic']
+        x = x['D'] if type(x) is dict else x
+        y = y['D'] if type(y) is dict else y
+        
+        rgb, gt = dset.to_rgb(x), dset.color_label(y)
         
         plt.imshow(np.uint8(.5*rgb+.5*gt))
         plt.title(imid)
         plt.show()
-        
-        # fig, axs = plt.subplots(2,1)
-        # axs[0].imshow(rgb)
-        # axs[1].imshow(gt)
-        # fig.suptitle(imid)
-        # plt.show()
