@@ -110,9 +110,9 @@ class BaseDataset(Dataset):
             rgb[...,ch] = np.roll(rgb[...,ch], shift_y, axis=0)
             
         if rgb is not None and self.kwargs['color_jitter'] and random.random() <.5:
-            nw = np.random.randint(200, 310, size=(3,))
+            nw = np.random.randint(255-self.kwargs['wshift_intensity'], 255+self.kwargs['wshift_intensity'], size=(3,))
             rgb = rgb*(nw/255.) # shift white point
-            rgb += np.random.randint(-25, 25, size=(3,)) # add random color shift
+            rgb += np.random.randint(-self.kwargs['cshift_intensity'], self.kwargs['cshift_intensity'], size=(3,)) # add random color shift
             rgb = np.round(np.clip(rgb, a_min=0, a_max=255)).astype(np.uint8)
             
         if self.kwargs['flip'] and random.random() <.5:

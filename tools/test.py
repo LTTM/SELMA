@@ -14,6 +14,9 @@ from utils.argparser import init_params, init_logger
 from utils.metrics import Metrics
 from models.model import SegmentationModel
 
+#from datasets.cityscapes_white import CityDataset
+#        self.tset = CityDataset(root_path=args.root_path,
+
 class Tester():
     def __init__(self, args, writer, logger):
         self.args = args
@@ -69,6 +72,13 @@ class Tester():
                     out, feats = out
                 pred = torch.argmax(out.detach(), dim=1)
                 metrics.add_sample(pred, y)
+                # same testing as maxsquare, check also flipped image (should increase performance)
+                x, y = x[...,list(range(x.shape[-1]-1,-1,-1))], y[...,list(range(y.shape[-1]-1,-1,-1))]
+                out = self.model(x) 
+                if type(out) is tuple:
+                    out, feats = out
+                pred = torch.argmax(out.detach(), dim=1)
+                metrics.add_sample(pred, y) # check also shape
 
         self.writer.add_image("test_input", self.tset.to_rgb(x[0].cpu()), 0, dataformats='HWC')
         self.writer.add_image("test_label", self.tset.color_label(y[0].cpu()), 0, dataformats='HWC')

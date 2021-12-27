@@ -8,9 +8,9 @@ python tools/test.py --dataset "lttm" --root_path "D:/Datasets/CarlaLTTM" --spli
 
 python tools/test.py --dataset "gta" --root_path "F:/Dataset/GTA/full" --splits_path "F:/Dataset/GTA/full" --logdir "evalst/city_dlv2_to_gta" --rescale_size "1280," --classifier "DeepLabV2" --ckpt_file "Y:/members/barbato/Code/CV_Analyses/logs/city_DLv2/val_best.pth" --test_split "val"
 
+python tools/test.py --dataset "city" --root_path "F:/Dataset/Cityscapes_extra" --splits_path "F:/Dataset/Cityscapes_extra" --logdir "evals/so_sjb_long_citywhite" --rescale_size "1280," --classifier "DeepLabV2MSIW" --ckpt_file "C:/Users/barbato/Desktop/carla_analyses/source_only_b1/carla_mcn_b1_sjb_long/latest.pth"
 
-python tools/test.py --dataset "city" --root_path "F:/Dataset/Cityscapes_extra" --splits_path "F:/Dataset/Cityscapes_extra" --logdir "evals/gta_so" --rescale_size "1280," --classifier "DeepLabV2MSIW" --ckpt_file "C:/Users/barbato/Desktop/carla_analyses/source_only/gta/latest.pth"
-
+python tools/test.py --dataset "city" --root_path "F:/Dataset/Cityscapes_extra" --splits_path "F:/Dataset/Cityscapes_extra" --logdir "evals/msiw_sjb_citywhite" --rescale_size "1280," --classifier "DeepLabV2MSIW" --ckpt_file "C:/Users/barbato/Desktop/barbato/CV_analyses/logs/msiw_sjb/latest.pth"
 
  -------------- DATASETS ----------------
 

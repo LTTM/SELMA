@@ -1,5 +1,0 @@
-python tools/train_UDA_FS.py --dataset "lttm" --root_path "D:/Datasets/CarlaLTTM" --splits_path "D:/Datasets/CarlaLTTM/splits" --train_split "train_mc" --val_split "val_mc" --time_of_day "noon" --logdir "logs/carla_fs_ogtg" --classifier "DeepLabV2MSIW" --target_dataset "city" --target_root_path "F:/Dataset/Cityscapes_extra" --target_splits_path "F:/Dataset/Cityscapes_extra" --validate_every_steps 5000
-
-python tools/train_UDA_FS.py --dataset "gta" --root_path "F:/Dataset/GTA/full" --splits_path "F:/Dataset/GTA/full" --logdir "logs/gta_fs_ogtg" --classifier "DeepLabV2MSIW" --target_dataset "city" --target_root_path "F:/Dataset/Cityscapes_extra" --target_splits_path "F:/Dataset/Cityscapes_extra" --validate_every_steps 5000
-
-python tools/train_UDA_FS.py --dataset "idda" --root_path "D:/Datasets/IDDAbest" --splits_path "D:/Datasets/IDDAbest" --logdir "logs/idda_fs_ogtg" --classifier "DeepLabV2MSIW" --target_dataset "city" --target_root_path "F:/Dataset/Cityscapes_extra" --target_splits_path "F:/Dataset/Cityscapes_extra" --class_set "idda16" --validate_every_steps 5000

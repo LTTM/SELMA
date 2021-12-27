@@ -51,6 +51,8 @@ class Trainer():
                                  noise_mul=args.noise_mul,
                                  color_shift=args.color_shift,
                                  color_jitter=args.color_jitter,
+                                 cshift_intensity=args.cshift_intensity,
+                                 wshift_intensity=args.wshift_intensity,
                                  sensors=args.sensors,
                                  town=args.town,
                                  weather=args.weather,

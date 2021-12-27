@@ -139,6 +139,8 @@ def init_params(train_type='source'):
                                help='Whether to randomly shift color channels')
         argparser.add_argument('--color_jitter', default=True, type=str2bool,
                                help='Whether to jitter color channels')
+        argparser.add_argument('--cshift_intensity', default=20, type=int)
+        argparser.add_argument('--wshift_intensity', default=55, type=int)
 
     argparser.add_argument('--batch_size', default=1, type=int,
                            help='Training batch size')
@@ -184,7 +186,7 @@ def init_params(train_type='source'):
     if train_type in ['uda', 'uda_fs']:
         argparser.add_argument('--lambda_msiw', default=1e-1, type=float,
                                help='UDA MaxSquareIW loss coefficient')
-        argparser.add_argument('--alpha_msiw', default=2e-1, type=float,
+        argparser.add_argument('--alpha_msiw', default=0, type=float,
                                help='MaxSquareIW alpha coefficient')
         argparser.add_argument('--beta_msiw', default=0, type=float,
                                help='MaxSquareIWEX beta coefficient')
