@@ -5,3 +5,7 @@
 logs
 evals
 old_logs
+source_only
+splits
+runs
+slurms
