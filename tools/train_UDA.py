@@ -28,7 +28,7 @@ class TrainerUDA(Trainer):
                                          sensors_positions=args.positions,
                                          class_set=args.class_set)
         self.ttloader = data.DataLoader(self.ttset,
-                                         shuffle=False,
+                                         shuffle=True,
                                          num_workers=args.dataloader_workers,
                                          batch_size=1,
                                          drop_last=True,

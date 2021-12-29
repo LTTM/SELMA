@@ -70,9 +70,9 @@ class Metrics:
         return self.__str__(target_class_set)
     
     def __str__(self, target_class_set=None):
-        out = "="*39+'\n'
-        out += "  Class\t\t PA %\t PP %\t IoU%\n"
-        out += "-"*39+'\n'
+        out = "="*46+'\n'
+        out += "  Class           \t PA %\t PP %\t IoU%\n"
+        out += "-"*46+'\n'
         
         keep_ids = ids_dict[self.class_set][target_class_set] if target_class_set is not None else None
             
@@ -85,17 +85,16 @@ class Metrics:
                 if i not in keep_ids:
                     continue
             npa, npp, niou = pa[i], pp[i], iou[i]
-            pad = "" if len(n) >= 6 else "\t"
             if self.log_colors:
                 cpa, cpp, ciou = self.get_color(npa, mpa, spa), self.get_color(npp, mpp, spp), self.get_color(niou, miou, siou)
                 tpa, tpp, tiou = self.color_tuple(npa, cpa), self.color_tuple(npp, cpp), self.color_tuple(niou, ciou)
-                out += "  %s\t%s %s%.1f%s\t %s%.1f%s\t %s%.1f%s\n"%(n, pad, *tpa, *tpp, *tiou)
+                out += "  "+n+" "*(16-len(n))+"\t %s%.1f%s\t %s%.1f%s\t %s%.1f%s\n"%(*tpa, *tpp, *tiou)
             else:
-                out += "  %s\t%s %.1f\t %.1f\t %.1f\n"%(n, pad, npa, npp, niou)
-        out += "-"*39+'\n'
-        out += "  Average\t %.1f\t %.1f\t %.1f\n"%(mpa, mpp, miou)
-        out += "  Std. Dev.\t %.1f\t %.1f\t %.1f\n"%(spa, spp, siou)
-        out += "="*39+'\n'
+                out += "  "+n+" "*(16-len(n))+"\t %.1f\t %.1f\t %.1f\n"%(npa, npp, niou)
+        out += "-"*46+'\n'
+        out += "  Average         \t %.1f\t %.1f\t %.1f\n"%(mpa, mpp, miou)
+        out += "  Std. Dev.       \t %.1f\t %.1f\t %.1f\n"%(spa, spp, siou)
+        out += "="*46+'\n'
         return out
             
 # if len(n)>=6:
