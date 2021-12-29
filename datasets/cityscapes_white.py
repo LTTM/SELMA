@@ -1,4 +1,5 @@
 import numpy as np
+import cv2 as cv
 from datasets.dataset import BaseDataset
 from utils.cmaps import City19cmap, Idd17cmap, Synthia16cmap, Idda16cmap, SII15cmap, Crosscity13cmap, CCI12cmap 
 from utils.idmaps import city19_to_idd17, city19_to_synthia16, city19_to_idda16, city10_to_sii15, city19_to_crosscity13, city19_to_cci12
@@ -75,3 +76,11 @@ class CityDataset(BaseDataset):
             self.cnames = crosscity13
         elif self.class_set == 'cci12':
             self.cnames = cci12
+    
+    @staticmethod
+    def load_rgb(im_path):
+        #image is read in bgr
+        im = cv.imread(im_path)
+        im = np.clip(np.round(im*255./np.array([245.,254.,240.])), a_min=0, a_max=255)
+        return im.astype(np.uint8)
+        

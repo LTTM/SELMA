@@ -6,7 +6,7 @@ from tensorboardX import SummaryWriter
 import logging
 
 from datasets.carlaLTTM import LTTMDataset
-from datasets.cityscapes import CityDataset
+from datasets.cityscapes_white import CityDataset
 from datasets.gta5 import GTAVDataset
 from datasets.idd import IDDDataset
 from datasets.idda import IDDADataset
