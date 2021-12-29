@@ -30,7 +30,7 @@ class TrainerUDA(Trainer):
         self.ttloader = data.DataLoader(self.ttset,
                                          shuffle=True,
                                          num_workers=args.dataloader_workers,
-                                         batch_size=1,
+                                         batch_size=args.batch_size,
                                          drop_last=True,
                                          pin_memory=args.pin_memory)
         
