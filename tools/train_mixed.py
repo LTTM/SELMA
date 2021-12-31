@@ -84,67 +84,66 @@ class TrainerMixed(Trainer):
         metrics = Metrics(self.args.class_set)
         it_tt = iter(self.ttloader)
         for i, sample in enumerate(pbar):
-
-            p = np.random.random() #target_sample_prob
-
+            
             curr_iter = self.args.validate_every_steps*epoch + i
             lr = lr_scheduler(self.optim, curr_iter, self.args.lr, self.args.decay_over_iterations, self.args.poly_power, self.args.batch_size)
             self.writer.add_scalar('lr', lr, curr_iter)
-        
-            x, y = sample[0]['rgb'], sample[0]['semantic']
-            x = x['D'].to('cuda', dtype=torch.float32) if type(x) is dict else x.to('cuda', dtype=torch.float32)
-            y = y['D'].to('cuda', dtype=torch.long) if type(y) is dict else y.to('cuda', dtype=torch.long)
             
-            self.optim.zero_grad()
-            
-            out = self.model(x)
-            if type(out) is tuple:
-                out, feats = out
-            
-            l = self.loss(out, y)
-            
-            self.writer.add_scalar('source_loss', l.item(), curr_iter)
-            
-            if p >= self.args.target_sample_prob:
-                l.backward()
-            
-            pred = torch.argmax(out.detach(), dim=1)
-            metrics.add_sample(pred, y)
-            self.writer.add_scalar('step_mIoU', metrics.percent_mIoU(), curr_iter)
-            
-            # target losses
-            
-            try:
-                t_sample = next(it_tt)
-            except:
-                it_tt = iter(self.ttloader)
-                t_sample = next(it_tt)
-            
-            x, y = t_sample[0]['rgb'], t_sample[0]['semantic']
-            x = x['D'].to('cuda', dtype=torch.float32) if type(x) is dict else x.to('cuda', dtype=torch.float32)
-            y = y['D'].to('cuda', dtype=torch.long) if type(y) is dict else y.to('cuda', dtype=torch.long)
-            
-            out = self.model(x)
-            if type(out) is tuple:
-                out, feats = out
-                
-            l = self.loss(out, y)
+            if np.random.random() >= self.args.target_sample_prob:
 
-            self.writer.add_scalar('target_loss', l.item(), curr_iter)
+                x, y = sample[0]['rgb'], sample[0]['semantic']
+                x = x['D'].to('cuda', dtype=torch.float32) if type(x) is dict else x.to('cuda', dtype=torch.float32)
+                y = y['D'].to('cuda', dtype=torch.long) if type(y) is dict else y.to('cuda', dtype=torch.long)
+                
+                self.optim.zero_grad()
+                
+                out = self.model(x)
+                if type(out) is tuple:
+                    out, feats = out
+                
+                l = self.loss(out, y)
+                
+                self.writer.add_scalar('source_loss', l.item(), curr_iter)
             
-            if p < self.args.target_sample_prob:
+                l.backward()
+                
+                pred = torch.argmax(out.detach(), dim=1)
+                metrics.add_sample(pred, y)
+                self.writer.add_scalar('step_mIoU', metrics.percent_mIoU(), curr_iter)
+
+            else:
+            
+                # target losses
+                try:
+                    t_sample = next(it_tt)
+                except:
+                    it_tt = iter(self.ttloader)
+                    t_sample = next(it_tt)
+                
+                x, y = t_sample[0]['rgb'], t_sample[0]['semantic']
+                x = x['D'].to('cuda', dtype=torch.float32) if type(x) is dict else x.to('cuda', dtype=torch.float32)
+                y = y['D'].to('cuda', dtype=torch.long) if type(y) is dict else y.to('cuda', dtype=torch.long)
+                
+                out = self.model(x)
+                if type(out) is tuple:
+                    out, feats = out
+                    
+                l = self.loss(out, y)
+
+                self.writer.add_scalar('target_loss', l.item(), curr_iter)
+            
                 l.backward()
             
-            pred = torch.argmax(out.detach(), dim=1)
-            metrics.add_sample(pred, y)
-            
-            self.optim.step()
-            
-            if i == self.args.validate_every_steps:
-                break
-            
-            if curr_iter == self.args.iterations-1:
-                break
+                pred = torch.argmax(out.detach(), dim=1)
+                metrics.add_sample(pred, y)
+                
+                self.optim.step()
+                
+                if i == self.args.validate_every_steps:
+                    break
+                
+                if curr_iter == self.args.iterations-1:
+                    break
         
         self.writer.add_image("target_train_input", self.tset.to_rgb(x[0].cpu()), epoch+1, dataformats='HWC')
         self.writer.add_image("target_train_label", self.tset.color_label(y[0].cpu()), epoch+1, dataformats='HWC')
