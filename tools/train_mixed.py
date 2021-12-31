@@ -136,13 +136,13 @@ class TrainerMixed(Trainer):
                 pred = torch.argmax(out.detach(), dim=1)
                 metrics.add_sample(pred, y)
                 
-                self.optim.step()
-                
-                if i == self.args.validate_every_steps:
-                    break
-                
-                if curr_iter == self.args.iterations-1:
-                    break
+            self.optim.step()
+            
+            if i == self.args.validate_every_steps:
+                break
+            
+            if curr_iter == self.args.iterations-1:
+                break
         
         self.writer.add_image("target_train_input", self.tset.to_rgb(x[0].cpu()), epoch+1, dataformats='HWC')
         self.writer.add_image("target_train_label", self.tset.color_label(y[0].cpu()), epoch+1, dataformats='HWC')
