@@ -66,7 +66,7 @@ def init_params(train_type='source'):
 
     argparser = argparse.ArgumentParser()
 
-    if train_type in ['source', 'uda', 'uda_fs', 'test']:
+    if train_type in ['source', 'uda', 'uda_fs', 'test', 'mixed']:
         argparser.add_argument('--dataset', default="gta", type=parse_dataset,
                                choices=[LTTMDataset, CityDataset, GTAVDataset, IDDDataset, IDDADataset, SYNTHIADataset, ACDCDataset, MapillaryDataset, TIPNTDataset],
                                help="The dataset used for supervised training, choose from ['lttm', 'city', 'gta', 'idd', 'synthia', 'acdc', 'mapi', 'tipnt']")
@@ -83,7 +83,7 @@ def init_params(train_type='source'):
         argparser.add_argument('--val_split', default='val', type=str,
                                help='Split file to be used for validation samples')
 
-    if train_type in ['source', 'uda', 'uda_fs']:
+    if train_type in ['source', 'uda', 'uda_fs', 'mixed']:
         argparser.add_argument('--target_dataset', default="city", type=parse_dataset,
                                choices=[LTTMDataset, CityDataset, GTAVDataset, IDDDataset, MapillaryDataset],
                                help="The dataset used as target, choose from ['lttm', 'city', 'gta', 'idd', 'mapi']")
@@ -124,7 +124,7 @@ def init_params(train_type='source'):
     argparser.add_argument('--class_set', default='city19', type=str,
                            help='Which class set to use.', choices=['city19', 'idd17', 'synthia16', 'idda16', 'sii15', 'crosscity13', 'cci12'])
 
-    if train_type in ['source', 'uda', 'uda_fs']:
+    if train_type in ['source', 'uda', 'uda_fs', 'mixed']:
         argparser.add_argument('--augment_data', default=True, type=str2bool,
                                help='Whether to augment the (training) images with flip & Gaussian Blur')
         argparser.add_argument('--random_flip', default=True, type=str2bool,
@@ -154,7 +154,7 @@ def init_params(train_type='source'):
     argparser.add_argument('--seed', default=12345, type=int,
                                help='Seed for the RNGs, for repeatability')
    
-    if train_type in ['source', 'uda', 'uda_fs']:
+    if train_type in ['source', 'uda', 'uda_fs', 'mixed']:
         argparser.add_argument('--sup_loss', default='ce', type=str, choices=['ce', 'msiw'],
                                help='The supervised loss to be used for optimimization')
         argparser.add_argument('--lr', default=2.5e-4, type=float,
@@ -190,7 +190,11 @@ def init_params(train_type='source'):
                                help='MaxSquareIW alpha coefficient')
         argparser.add_argument('--beta_msiw', default=0, type=float,
                                help='MaxSquareIWEX beta coefficient')
-                   
+
+    if train_type in ['mixed']:
+        argparser.add_argument('--target_sample_prob', default=0, type=float,
+                               help='Probability of choosing a target dataset sample during training')
+
     return argparser.parse_args()
     
 class StripColorsFormatter(logging.Formatter):
