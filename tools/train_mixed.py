@@ -88,14 +88,13 @@ class TrainerMixed(Trainer):
             curr_iter = self.args.validate_every_steps*epoch + i
             lr = lr_scheduler(self.optim, curr_iter, self.args.lr, self.args.decay_over_iterations, self.args.poly_power, self.args.batch_size)
             self.writer.add_scalar('lr', lr, curr_iter)
+            self.optim.zero_grad()
             
             if np.random.random() >= self.args.target_sample_prob:
 
                 x, y = sample[0]['rgb'], sample[0]['semantic']
                 x = x['D'].to('cuda', dtype=torch.float32) if type(x) is dict else x.to('cuda', dtype=torch.float32)
                 y = y['D'].to('cuda', dtype=torch.long) if type(y) is dict else y.to('cuda', dtype=torch.long)
-                
-                self.optim.zero_grad()
                 
                 out = self.model(x)
                 if type(out) is tuple:
