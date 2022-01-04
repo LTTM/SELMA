@@ -48,12 +48,12 @@ class Bottleneck(nn.Module):
 
 # noinspection PyTypeChecker
 class DeeplabResnet(nn.Module):
-    def __init__(self, block, layers, num_classes, classifier):
+    def __init__(self, inchs, block, layers, num_classes, classifier):
 
         self.inplanes = 64
         super(DeeplabResnet, self).__init__()
 
-        self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
+        self.conv1 = nn.Conv2d(inchs, 64, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = nn.BatchNorm2d(64)
 
         for i in self.bn1.parameters():

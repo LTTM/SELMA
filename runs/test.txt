@@ -12,7 +12,7 @@ python tools/test.py --dataset "city" --root_path "F:/Dataset/Cityscapes_extra" 
 
 python tools/test.py --dataset "city" --root_path "F:/Dataset/Cityscapes_extra" --splits_path "F:/Dataset/Cityscapes_extra" --logdir "evals/so/carla_rand" --rescale_size "1280," --classifier "DeepLabV2MSIW" --ckpt_file "C:/Users/barbato/Desktop/carla_analyses/so/carla_rand.pth"
 
-python tools/test.py --dataset "city" --root_path "F:/Dataset/Cityscapes_extra" --splits_path "F:/Dataset/Cityscapes_extra" --logdir "evals/so/idda" --rescale_size "1280," --classifier "DeepLabV2MSIW" --ckpt_file "C:/Users/barbato/Desktop/carla_analyses/so/idda.pth" --class_set "idda16"
+python tools/test.py --dataset "city" --root_path "F:/Dataset/Cityscapes_extra" --splits_path "F:/Dataset/Cityscapes_extra" --logdir "evals/msiw/gta_latest" --rescale_size "1280," --classifier "DeepLabV2MSIW" --ckpt_file "C:/Users/barbato/Desktop/carla_analyses/msiw/latest/gta.pth"
 
  -------------- DATASETS ----------------
 

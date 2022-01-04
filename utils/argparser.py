@@ -148,6 +148,8 @@ def init_params(train_type='source'):
                            help='Number of workers to use for each dataloader (significantly affects RAM consumption)')
     argparser.add_argument('--pin_memory', default=False, type=str2bool)
     
+    argparser.add_argument('--input_channels', default=3, type=int,
+                           help='Number of input channels of the network')
     argparser.add_argument('--classifier', default='DeepLabV3', type=str,
                            choices=['DeepLabV2', 'DeepLabV3', 'DeepLabV2MSIW', 'FCN', 'PSPNet', 'UNet'],
                            help='Which classifier head to use in the model')

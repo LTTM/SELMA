@@ -5,7 +5,7 @@ from models.fcn import FCNClassifier
 from models.pspnet import PSPNetClassifier
 from models.unet import UNet
 
-def SegmentationModel(num_classes, classifier, pretrained=True):
+def SegmentationModel(inchs, num_classes, classifier, pretrained=True):
     if classifier.lower() == 'DeepLabV2'.lower():
         clas = DeepLabV2Classifier
     elif classifier.lower() == 'DeepLabV2MSIW'.lower():
@@ -17,14 +17,19 @@ def SegmentationModel(num_classes, classifier, pretrained=True):
     elif classifier.lower() == 'PSPNet'.lower():
         clas = PSPNetClassifier
     elif classifier.lower() == 'UNet'.lower():
-        model = UNet(3, num_classes)
+        model = UNet(inchs, num_classes)
     else:
         ValueError("Unrecognized Classifier:"+classifier)
 
     if not classifier.lower() == 'UNet'.lower():
-        model = DeeplabResnet(Bottleneck, [3, 4, 23, 3], num_classes, clas)
+        model = DeeplabResnet(inchs, Bottleneck, [3, 4, 23, 3], num_classes, clas)
         if pretrained:
-            restore_from = './models/backbone_checkpoints/resnet101-5d3b4d8f.pth'
+            if inchs == 1:
+                restore_from = './models/backbone_checkpoints/resnet101-5d3b4d8f-depth.pth'
+            elif inchs == 4:
+                restore_from = './models/backbone_checkpoints/resnet101-5d3b4d8f-rgbd.pth'
+            else:
+                restore_from = './models/backbone_checkpoints/resnet101-5d3b4d8f-rgb.pth'
             saved_state_dict = torch.load(restore_from)
 
             new_params = model.state_dict().copy()
@@ -32,7 +37,8 @@ def SegmentationModel(num_classes, classifier, pretrained=True):
                 i_parts = i.split('.')
                 if not i_parts[1] == 'layer5' and not i_parts[0] == 'fc':
                     new_params[i] = saved_state_dict[i]
-            model.load_state_dict(new_params)
+
+            model.load_state_dict(new_params, strict=inchs in [1,3,4])
 
         # add backbone to model for later use
         model.parameters_dict = [{'params': model.get_1x_lr_params_NOscale(), 'lr': 1},

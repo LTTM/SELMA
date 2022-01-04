@@ -46,7 +46,7 @@ class Tester():
         num_classes = len(self.tset.cnames)
         self.logger.info("Training on class set: %s, Classes: %d"%(args.class_set, num_classes))
         
-        self.model = SegmentationModel(num_classes, args.classifier)
+        self.model = SegmentationModel(args.input_channels, num_classes, args.classifier)
         self.model.to('cuda')
         assert os.path.exists(args.ckpt_file), "Checkpoint [%s] not found, aborting..."%(args.ckpt_file)
         
