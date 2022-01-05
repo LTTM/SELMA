@@ -58,8 +58,7 @@ class Trainer():
                                  weather=args.weather,
                                  time_of_day=args.time_of_day,
                                  sensors_positions=args.positions,
-                                 class_set=args.class_set,
-                                 return_grayscale=args.input_channels==1)
+                                 class_set=args.class_set)
         self.tloader = data.DataLoader(self.tset,
                                        shuffle=True,
                                        num_workers=args.dataloader_workers,
@@ -78,8 +77,7 @@ class Trainer():
                                  weather=args.weather,
                                  time_of_day=args.time_of_day,
                                  sensors_positions=args.positions,
-                                 class_set=args.class_set,
-                                 return_grayscale=args.input_channels==1)
+                                 class_set=args.class_set)
         self.vloader = data.DataLoader(self.vset,
                                        shuffle=False,
                                        num_workers=args.dataloader_workers,
@@ -102,8 +100,7 @@ class Trainer():
                                              weather=args.weather,
                                              time_of_day=args.time_of_day,
                                              sensors_positions=args.positions,
-                                             class_set=args.class_set,
-                                             return_grayscale=args.input_channels==1)
+                                             class_set=args.class_set)
             self.tvloader = data.DataLoader(self.tvset,
                                              shuffle=False,
                                              num_workers=args.dataloader_workers,

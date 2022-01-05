@@ -19,6 +19,7 @@ class BaseDataset(Dataset):
                  crop_to=None,
                  augment_data=True,
                  sensors=['rgb'],
+                 return_grayscale=False,
                  **kwargs): # whether to use city19 or city36 class set
 
         self.root_path = root_path
@@ -27,6 +28,7 @@ class BaseDataset(Dataset):
         self.crop_to = crop_to
         self.kwargs = kwargs
         self.augment_data = augment_data
+        self.return_grayscale = return_grayscale
 
         with open(path.join(splits_path, split+'.'+split_extension)) as f:
             #self.items = [l.rstrip('\n').split(split_separator) for l in f][split_skiplines:]
@@ -147,32 +149,20 @@ class BaseDataset(Dataset):
     def __len__(self):
         return len(self.items)
 
-    """
-    maxsquareloss preprocessing
-    @staticmethod
-    def to_pytorch(rgb=None, gt=None, depth=None):
-        if rgb is not None: rgb = torch.from_numpy(np.transpose(rgb-[104.00698793, 116.66876762, 122.6789143], (2, 0, 1)).astype(np.float32))
+    def to_pytorch(self, rgb=None, gt=None, depth=None):
+        if not self.return_grayscale:
+            if rgb is not None: rgb = torch.from_numpy(np.transpose((rgb[...,::-1]/255.-[0.485, 0.456, 0.406])/[0.485, 0.456, 0.406], (2, 0, 1)).astype(np.float32))
+        else:
+            if rgb is not None: rgb = torch.from_numpy(np.transpose(np.expand_dims(cv.cvtColor(rgb, cv.COLOR_BGR2GRAY)/127.5 -1, -1), (2, 0, 1)).astype(np.float32))
         if gt is not None: torch.from_numpy(gt.astype(np.long))
         if depth is not None: torch.from_numpy(depth.astype(np.float32))
         return rgb, gt, depth
 
-    @staticmethod
-    def to_rgb(tensor):
-        t = np.array(tensor.transpose(0,1).transpose(1,2))+[104.00698793, 116.66876762, 122.6789143] # bgr
-        t = np.round(t[...,::-1]).astype(np.uint8) # rgb
-        return t
-    """
-        
-    @staticmethod
-    def to_pytorch(rgb=None, gt=None, depth=None):
-        if rgb is not None: rgb = torch.from_numpy(np.transpose((rgb[...,::-1]/255.-[0.485, 0.456, 0.406])/[0.485, 0.456, 0.406], (2, 0, 1)).astype(np.float32))
-        if gt is not None: torch.from_numpy(gt.astype(np.long))
-        if depth is not None: torch.from_numpy(depth.astype(np.float32))
-        return rgb, gt, depth
-
-    @staticmethod
-    def to_rgb(tensor):
-        t = (np.array(tensor.transpose(0,1).transpose(1,2))*[0.485, 0.456, 0.406]+[0.485, 0.456, 0.406])*255.
+    def to_rgb(self, tensor):
+        if not self.return_grayscale:
+            t = (np.array(tensor.transpose(0,1).transpose(1,2))*[0.485, 0.456, 0.406]+[0.485, 0.456, 0.406])*255.
+        else:
+            t = (np.array(tensor.transpose(0,1).transpose(1,2))+1.)*127.5
         t = np.round(t).astype(np.uint8) # rgb
         return t
 
