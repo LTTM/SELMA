@@ -107,10 +107,10 @@ def init_params(train_type='source'):
         argparser.add_argument('--test_split', default='test', type=str,
                                help='Split file to be used for test samples')
 
-    argparser.add_argument('--sensors', default='rgb,semantic', type=str2intlist,
-                           help='Sensors to be used - syntax:"sen1,sen2,..."')
-    argparser.add_argument('--target_sensors', default='rgb,semantic', type=str2intlist,
-                           help='Sensors to be used - syntax:"sen1,sen2,..."')
+    # argparser.add_argument('--sensors', default='rgb,semantic', type=str2intlist,
+                           # help='Sensors to be used - syntax:"sen1,sen2,..."')
+    # argparser.add_argument('--target_sensors', default='rgb,semantic', type=str2intlist,
+                           # help='Sensors to be used - syntax:"sen1,sen2,..."')
 
     argparser.add_argument('--positions', default='D', type=str2intlist,
                            help='Positions of the sensors, only for lttm set - syntax:"pos1,pos2,..."')

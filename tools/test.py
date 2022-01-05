@@ -29,7 +29,7 @@ class Tester():
                                  resize_to=args.rescale_size,
                                  crop_to=None,
                                  augment_data=False,
-                                 sensors=args.sensors,
+                                 sensors=['rgb', 'semantic'],
                                  town=args.town,
                                  weather=args.weather,
                                  time_of_day=args.time_of_day,
