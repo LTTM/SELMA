@@ -20,6 +20,7 @@ class BaseDataset(Dataset):
                  augment_data=True,
                  sensors=['rgb'],
                  return_grayscale=False,
+                 depth_mode='log',
                  **kwargs): # whether to use city19 or city36 class set
 
         self.root_path = root_path
@@ -29,6 +30,7 @@ class BaseDataset(Dataset):
         self.kwargs = kwargs
         self.augment_data = augment_data
         self.return_grayscale = return_grayscale
+        self.depth_mode = depth_mode
 
         with open(path.join(splits_path, split+'.'+split_extension)) as f:
             #self.items = [l.rstrip('\n').split(split_separator) for l in f][split_skiplines:]
@@ -154,12 +156,20 @@ class BaseDataset(Dataset):
             if rgb is not None: rgb = torch.from_numpy(np.transpose((rgb[...,::-1]/255.-[0.485, 0.456, 0.406])/[0.485, 0.456, 0.406], (2, 0, 1)).astype(np.float32))
         else:
             if rgb is not None: rgb = torch.from_numpy(np.transpose(np.expand_dims(cv.cvtColor(rgb, cv.COLOR_BGR2GRAY)/127.5 -1, -1), (2, 0, 1)).astype(np.float32))
-        if gt is not None: torch.from_numpy(gt.astype(np.long))
-        if depth is not None: torch.from_numpy(depth.astype(np.float32))
+        if gt is not None: gt = torch.from_numpy(gt.astype(np.long))
+        if depth is not None:
+            if self.depth_mode == 'linear':
+                depth = torch.from_numpy((2*depth-1.).astype(np.float32)).unsqueeze(0) # depth should be normalized in [0,1] before input
+            elif self.depth_mode == 'log':
+                depth = torch.from_numpy((2*(np.log2(depth+1.))-1.).astype(np.float32)).unsqueeze(0) # depth should be normalized in [0,1] before input
+            elif self.depth_mode == 'root4':
+                depth = torch.from_numpy((2*np.power(depth, 1/4)-1.).astype(np.float32)).unsqueeze(0) # depth should be normalized in [0,1] before input
+            else:
+                depth = torch.from_numpy((2*np.sqrt(depth)-1.).astype(np.float32)).unsqueeze(0) # depth should be normalized in [0,1] before input
         return rgb, gt, depth
 
-    def to_rgb(self, tensor):
-        if not self.return_grayscale:
+    def to_rgb(self, tensor, force_gray=False):
+        if not (self.return_grayscale or force_gray):
             t = (np.array(tensor.transpose(0,1).transpose(1,2))*[0.485, 0.456, 0.406]+[0.485, 0.456, 0.406])*255.
         else:
             t = (np.array(tensor.transpose(0,1).transpose(1,2))+1.)*127.5
@@ -182,7 +192,7 @@ class BaseDataset(Dataset):
     @staticmethod
     def load_depth(im_path):
         #image should be grayscale
-        return cv.imread(im_path, cv.IMREAD_UNCHANGED)
+        return (cv.imread(im_path, cv.IMREAD_UNCHANGED)/255.).astype(np.float32)
 
     def map_to_train(self, gt):
         gt_clone = self.ignore_index*np.ones(gt.shape, dtype=np.long)

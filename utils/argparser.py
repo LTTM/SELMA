@@ -66,7 +66,7 @@ def init_params(train_type='source'):
 
     argparser = argparse.ArgumentParser()
 
-    if train_type in ['source', 'uda', 'uda_fs', 'test', 'mixed']:
+    if train_type in ['source', 'uda', 'uda_fs', 'test', 'mixed', 'depth']:
         argparser.add_argument('--dataset', default="gta", type=parse_dataset,
                                choices=[LTTMDataset, CityDataset, GTAVDataset, IDDDataset, IDDADataset, SYNTHIADataset, ACDCDataset, MapillaryDataset, TIPNTDataset],
                                help="The dataset used for supervised training, choose from ['lttm', 'city', 'gta', 'idd', 'synthia', 'acdc', 'mapi', 'tipnt']")
@@ -99,8 +99,6 @@ def init_params(train_type='source'):
                                help='Split file to be used for training samples')
         argparser.add_argument('--target_val_split', default='val', type=str,
                                help='Split file to be used for validation samples')
-        argparser.add_argument('--ce_use_weights', default=False, type=str2bool,
-                               help='Whether to use pixel frequencies to normalize the cross-entropy')
         
 
     if train_type in ['test']:
@@ -124,7 +122,7 @@ def init_params(train_type='source'):
     argparser.add_argument('--class_set', default='city19', type=str,
                            help='Which class set to use.', choices=['city19', 'idd17', 'synthia16', 'idda16', 'sii15', 'crosscity13', 'cci12'])
 
-    if train_type in ['source', 'uda', 'uda_fs', 'mixed']:
+    if train_type in ['source', 'uda', 'uda_fs', 'mixed', 'depth']:
         argparser.add_argument('--augment_data', default=True, type=str2bool,
                                help='Whether to augment the (training) images with flip & Gaussian Blur')
         argparser.add_argument('--random_flip', default=True, type=str2bool,
@@ -156,7 +154,7 @@ def init_params(train_type='source'):
     argparser.add_argument('--seed', default=12345, type=int,
                                help='Seed for the RNGs, for repeatability')
    
-    if train_type in ['source', 'uda', 'uda_fs', 'mixed']:
+    if train_type in ['source', 'uda', 'uda_fs', 'mixed', 'depth']:
         argparser.add_argument('--sup_loss', default='ce', type=str, choices=['ce', 'msiw'],
                                help='The supervised loss to be used for optimimization')
         argparser.add_argument('--lr', default=2.5e-4, type=float,
@@ -173,6 +171,8 @@ def init_params(train_type='source'):
                                help='SGD optimizer weight decay')
         argparser.add_argument('--validate_every_steps', default=2500, type=int,
                                help='Number of iterations every which a validation is run, <= 0 disables validation')
+        argparser.add_argument('--ce_use_weights', default=False, type=str2bool,
+                               help='Whether to use pixel frequencies to normalize the cross-entropy')
 
     if train_type in ['source']:
         argparser.add_argument('--validate_on_target', default=False, type=str2bool,
@@ -196,6 +196,11 @@ def init_params(train_type='source'):
     if train_type in ['mixed']:
         argparser.add_argument('--target_sample_prob', default=0, type=float,
                                help='Probability of choosing a target dataset sample during training')
+
+    if train_type in ['depth']:
+        argparser.add_argument('--depth_mode', default='root4', type=str,
+                               choices=['log', 'root4', 'linear', 'sqrt'],
+                               help='type of prepreocessing for the depth')
 
     return argparser.parse_args()
     

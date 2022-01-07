@@ -139,10 +139,10 @@ class LTTMDataset(CityDataset):
 
     # carla.
     @staticmethod
-    def load_depth(im_path, rescale=True): # return the depth in meters
+    def load_depth(im_path):
         t = cv.imread(im_path).astype(int)*np.array([256*256, 256, 1])
         t = t.sum(axis=2)/(256 * 256 * 256 - 1.)
-        return 1000.*t if rescale else t
+        return t
 
     def load_lidar(self, path, xyz_shift=0.):
         data = PlyData.read(path)
