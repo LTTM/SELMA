@@ -5,7 +5,7 @@ from models.fcn import FCNClassifier
 from models.pspnet import PSPNetClassifier
 from models.unet import UNet
 
-def SegmentationModel(inchs, num_classes, classifier, pretrained=True):
+def SegmentationModel(inchs, num_classes, classifier, pretrained=True, depth_feed_mode='input'):
     if classifier.lower() == 'DeepLabV2'.lower():
         clas = DeepLabV2Classifier
     elif classifier.lower() == 'DeepLabV2MSIW'.lower():
@@ -22,12 +22,15 @@ def SegmentationModel(inchs, num_classes, classifier, pretrained=True):
         ValueError("Unrecognized Classifier:"+classifier)
 
     if not classifier.lower() == 'UNet'.lower():
-        model = DeeplabResnet(inchs, Bottleneck, [3, 4, 23, 3], num_classes, clas)
+        model = DeeplabResnet(inchs, Bottleneck, [3, 4, 23, 3], num_classes, clas, depth_feed_mode)
         if pretrained:
             if inchs == 1:
                 restore_from = './models/backbone_checkpoints/resnet101-5d3b4d8f-depth.pth'
             elif inchs == 4:
-                restore_from = './models/backbone_checkpoints/resnet101-5d3b4d8f-rgbd.pth'
+                if depth_feed_mode == 'input':
+                    restore_from = './models/backbone_checkpoints/resnet101-5d3b4d8f-rgbd-input.pth'
+                elif depth_feed_mode == 'layer1':
+                    restore_from = './models/backbone_checkpoints/resnet101-5d3b4d8f-rgbd-layer1.pth'
             else:
                 restore_from = './models/backbone_checkpoints/resnet101-5d3b4d8f-rgb.pth'
             saved_state_dict = torch.load(restore_from)

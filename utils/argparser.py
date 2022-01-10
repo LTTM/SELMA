@@ -201,6 +201,9 @@ def init_params(train_type='source'):
         argparser.add_argument('--depth_mode', default='root4', type=str,
                                choices=['log', 'root4', 'linear', 'sqrt'],
                                help='type of prepreocessing for the depth')
+        argparser.add_argument('--depth_feed_mode', default='input', type=str,
+                               choices=['input', 'layer1'],
+                               help='How to provide depth information to the netowork')
 
     return argparser.parse_args()
     
