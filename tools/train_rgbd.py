@@ -96,8 +96,6 @@ class Trainer():
         self.logger.info("Training on class set: %s, Classes: %d"%(args.class_set, num_classes))
         
         self.model = SegmentationModel(args.input_channels, num_classes, args.classifier, depth_feed_mode=args.depth_feed_mode)
-        print(self.model)
-        exit()
         self.model.to('cuda')
         
         self.optim = torch.optim.SGD(params=self.model.parameters_dict,
