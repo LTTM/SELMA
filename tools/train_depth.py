@@ -57,7 +57,7 @@ class Trainer():
                                  town=args.town,
                                  weather=args.weather,
                                  time_of_day=args.time_of_day,
-                                 sensors_positions=args.positions,
+                                 sensor_positions=args.positions,
                                  class_set=args.class_set,
                                  return_grayscale=args.input_channels==1,
                                  depth_mode=args.depth_mode)
@@ -78,7 +78,7 @@ class Trainer():
                                  town=args.town,
                                  weather=args.weather,
                                  time_of_day=args.time_of_day,
-                                 sensors_positions=args.positions,
+                                 sensor_positions=args.positions,
                                  class_set=args.class_set,
                                  return_grayscale=args.input_channels==1,
                                  depth_mode=args.depth_mode)

@@ -25,7 +25,7 @@ if __name__ == "__main__":
                         town=args.town,
                         weather=args.weather,
                         time_of_day=args.time_of_day,
-                        sensors_positions=args.positions,
+                        sensor_positions=args.positions,
                         class_set=args.class_set)
     tloader = data.DataLoader(tset,
                               shuffle=False,

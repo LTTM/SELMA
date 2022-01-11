@@ -33,7 +33,7 @@ class Tester():
                                  town=args.town,
                                  weather=args.weather,
                                  time_of_day=args.time_of_day,
-                                 sensors_positions=args.positions,
+                                 sensor_positions=args.positions,
                                  class_set=args.class_set)
         self.tloader = data.DataLoader(self.tset,
                                        shuffle=False,

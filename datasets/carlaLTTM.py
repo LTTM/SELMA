@@ -145,6 +145,7 @@ class LTTMDataset(CityDataset):
         return t
 
     def load_lidar(self, path, xyz_shift=0.):
+        print(path)
         data = PlyData.read(path)
         xyz = np.array([[x,y,z] for x,y,z,_,_ in data['vertex']])+xyz_shift
         l = np.array([l for _,_,_,_,l in data['vertex']])
