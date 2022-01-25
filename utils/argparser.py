@@ -66,7 +66,7 @@ def init_params(train_type='source'):
 
     argparser = argparse.ArgumentParser()
 
-    if train_type in ['source', 'uda', 'uda_fs', 'test', 'mixed', 'depth']:
+    if train_type in ['source', 'uda', 'uda_fs', 'test', 'mixed', 'depth', 'depthtest']:
         argparser.add_argument('--dataset', default="gta", type=parse_dataset,
                                choices=[LTTMDataset, CityDataset, GTAVDataset, IDDDataset, IDDADataset, SYNTHIADataset, ACDCDataset, MapillaryDataset, TIPNTDataset],
                                help="The dataset used for supervised training, choose from ['lttm', 'city', 'gta', 'idd', 'synthia', 'acdc', 'mapi', 'tipnt']")
@@ -101,7 +101,7 @@ def init_params(train_type='source'):
                                help='Split file to be used for validation samples')
         
 
-    if train_type in ['test']:
+    if train_type in ['test', 'depthtest']:
         argparser.add_argument('--test_split', default='test', type=str,
                                help='Split file to be used for test samples')
 
@@ -114,9 +114,9 @@ def init_params(train_type='source'):
                            help='Positions of the sensors, only for lttm set - syntax:"pos1,pos2,..."')
     argparser.add_argument('--town', default=None, type=str,
                            help='Override town on lttm dataset')
-    argparser.add_argument('--time_of_day', default=None, type=str,
+    argparser.add_argument('--time_of_day', default=None, type=str2str_none_num,
                            help='Override Time-of-Day on lttm dataset')
-    argparser.add_argument('--weather', default=None, type=str,
+    argparser.add_argument('--weather', default=None, type=str2str_none_num,
                            help='Override Weather on lttm dataset')
 
     argparser.add_argument('--class_set', default='city19', type=str,
@@ -181,7 +181,7 @@ def init_params(train_type='source'):
     argparser.add_argument('--logdir', default="log/%d"%(int(time.time())), type=str,
                    help='Path to the log directory')
 
-    if train_type in ['uda', 'test']:
+    if train_type in ['uda', 'test', 'depthtest']:
         argparser.add_argument('--ckpt_file', default=None, type=str,
                        help='Path to the model checkpoint, used in test script')
 
@@ -197,7 +197,7 @@ def init_params(train_type='source'):
         argparser.add_argument('--target_sample_prob', default=0, type=float,
                                help='Probability of choosing a target dataset sample during training')
 
-    if train_type in ['depth']:
+    if train_type in ['depth', 'depthtest']:
         argparser.add_argument('--depth_mode', default='root4', type=str,
                                choices=['log', 'root4', 'linear', 'sqrt'],
                                help='type of prepreocessing for the depth')

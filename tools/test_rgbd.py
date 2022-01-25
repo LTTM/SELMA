@@ -29,7 +29,7 @@ class Tester():
                                  resize_to=args.rescale_size,
                                  crop_to=None,
                                  augment_data=False,
-                                 sensors=['depth', 'semantic'],
+                                 sensors=['rgb', 'depth', 'semantic'],
                                  town=args.town,
                                  weather=args.weather,
                                  time_of_day=args.time_of_day,
@@ -48,7 +48,7 @@ class Tester():
         num_classes = len(self.tset.cnames)
         self.logger.info("Training on class set: %s, Classes: %d"%(args.class_set, num_classes))
         
-        self.model = SegmentationModel(args.input_channels, num_classes, args.classifier)
+        self.model = SegmentationModel(args.input_channels, num_classes, args.classifier, depth_feed_mode=args.depth_feed_mode)
         self.model.to('cuda')
         assert os.path.exists(args.ckpt_file), "Checkpoint [%s] not found, aborting..."%(args.ckpt_file)
         
@@ -65,9 +65,11 @@ class Tester():
         with torch.no_grad():
             for i, sample in enumerate(pbar):
 
-                x, y = sample[0]['depth'], sample[0]['semantic']
+                x, d, y = sample[0]['rgb'], sample[0]['depth'], sample[0]['semantic']
                 x = x['D'].to('cuda', dtype=torch.float32) if type(x) is dict else x.to('cuda', dtype=torch.float32)
+                d = d['D'].to('cuda', dtype=torch.float32) if type(d) is dict else d.to('cuda', dtype=torch.float32)
                 y = y['D'].to('cuda', dtype=torch.long) if type(y) is dict else y.to('cuda', dtype=torch.long)
+                x = torch.cat([x,d], dim=1)
                 
                 out = self.model(x)
                 if type(out) is tuple:
@@ -82,7 +84,8 @@ class Tester():
                 pred = torch.argmax(out.detach(), dim=1)
                 metrics.add_sample(pred, y) # check also shape
 
-        self.writer.add_image("test_input", self.tset.to_rgb(x[0].cpu()), 0, dataformats='HWC')
+        self.writer.add_image("test_input_rgb", self.tset.to_rgb(x[0,:3].cpu()), 0, dataformats='HWC')
+        self.writer.add_image("test_input_depth", self.tset.to_rgb(x[0,3:].cpu(), force_gray=True), 0, dataformats='HWC')
         self.writer.add_image("test_label", self.tset.color_label(y[0].cpu()), 0, dataformats='HWC')
         self.writer.add_image("test_pred", self.tset.color_label(pred[0].cpu()), 0, dataformats='HWC')
         
