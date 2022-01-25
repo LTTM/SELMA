@@ -29,13 +29,14 @@ class Tester():
                                  resize_to=args.rescale_size,
                                  crop_to=None,
                                  augment_data=False,
-                                 sensors=['rgb', 'semantic'],
+                                 sensors=['depth', 'semantic'],
                                  town=args.town,
                                  weather=args.weather,
                                  time_of_day=args.time_of_day,
                                  sensor_positions=args.positions,
-                                 class_set=args.class_set,
-                                 return_grayscale=args.input_channels==1)
+                                 class_set=args.class_set
+                                 return_grayscale=args.input_channels==1,
+                                 depth_mode=args.depth_mode)
         self.tloader = data.DataLoader(self.tset,
                                        shuffle=False,
                                        num_workers=args.dataloader_workers,

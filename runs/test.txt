@@ -14,6 +14,14 @@ python tools/test.py --dataset "city" --root_path "F:/Dataset/Cityscapes_extra" 
 
 python tools/test.py --dataset "city" --root_path "F:/Dataset/Cityscapes_extra" --splits_path "F:/Dataset/Cityscapes_extra" --logdir "evals/msiw/gta_latest" --rescale_size "1280," --classifier "DeepLabV2MSIW" --ckpt_file "C:/Users/barbato/Desktop/carla_analyses/msiw/latest/gta.pth"
 
+
+
+python tools/test.py --dataset "lttm" --logdir "evals/depth/gray" --root_path "D:/Datasets/CarlaLTTM/data" --splits_path "D:/Datasets/CarlaLTTM/splits" --rescale_size "1280," --test_split "test_rand" --input_channels 1 --ckpt_file "C:/Users/barbato/Desktop/carla_analyses/depth/grayscale.pth" --classifier "DeepLabV2MSIW"
+
+
+
+
+
  -------------- DATASETS ----------------
 
 python tools/test_dataset.py --dataset "idda" --root_path "D:/Datasets/IDDAbest" --splits_path "D:/Datasets/IDDAbest" --class_set "idda16"
