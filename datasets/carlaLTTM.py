@@ -145,11 +145,17 @@ class LTTMDataset(CityDataset):
         return t
 
     def load_lidar(self, path, xyz_shift=0.):
-        print(path)
         data = PlyData.read(path)
         xyz = np.array([[x,y,z] for x,y,z,_,_ in data['vertex']])+xyz_shift
         l = np.array([l for _,_,_,_,l in data['vertex']])
         mapped = self.ignore_index*np.ones_like(l, dtype=int)
         for k,v in self.raw_to_train.items():
             mapped[l==k] = v
+
+        to_pad = 100032 - xyz.shape[0]
+        #print(xyz.shape)
+        xyz = np.pad(xyz, ((0,to_pad), (0,0)))        
+        mapped = np.pad(mapped, (0,to_pad), constant_values=-1)
+        #print(xyz.shape, mapped.shape)
+        
         return (xyz, mapped)

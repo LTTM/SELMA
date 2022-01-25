@@ -22,7 +22,7 @@ city19 = ["road",
           "bus",
           "train",
           "motorbike",
-          "bycicle"]
+          "bicycle"]
 
 idd17 = ["road",
          "sidewalk",
@@ -40,7 +40,7 @@ idd17 = ["road",
          "truck",
          "bus",
          "motorbike",
-         "bycicle"]
+         "bicycle"]
 
 
 synthia16 = ["road",
@@ -58,7 +58,7 @@ synthia16 = ["road",
              "car",
              "bus",
              "motorbike",
-             "bycicle"]
+             "bicycle"]
 
 
 idda16 = ["road",
@@ -76,7 +76,7 @@ idda16 = ["road",
           "rider",
           "car",
           "motorbike",
-          "bycicle"]
+          "bicycle"]
 
 
 sii15 = ["road",
@@ -93,7 +93,7 @@ sii15 = ["road",
          "rider",
          "car",
          "motorbike",
-         "bycicle"]
+         "bicycle"]
 
 
 crosscity13 = ["road",
@@ -108,21 +108,21 @@ crosscity13 = ["road",
                "car",
                "bus",
                "motorbike",
-               "bycicle"]
+               "bicycle"]
 
 
 cci12 = ["road",
-       "sidewalk",
-       "building",
-       "traffic light",
-       "traffic sign",
-       "vegetation",
-       "sky",
-       "person",
-       "rider",
-       "car",
-       "motorbike",
-       "bycicle"]
+        "sidewalk",
+        "building",
+        "traffic light",
+        "traffic sign",
+        "vegetation",
+        "sky",
+        "person",
+        "rider",
+        "car",
+        "motorbike",
+        "bicycle"]
 
 
 names_dict = {'city19':city19, 'idd17':idd17, 'synthia16':synthia16, 'idda16':idda16, 'sii15':sii15, 'crosscity13':crosscity13, 'cci12':cci12}

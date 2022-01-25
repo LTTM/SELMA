@@ -131,6 +131,18 @@ class Trainer():
                 torch.save(self.model.state_dict(), os.path.join(self.args.logdir, "val_best.pth"))
             self.logger.info("Best validation score is %.2f at epoch %d"%(self.best_miou, self.best_epoch+1))
 
+    def to_spherical(self, x_raw, y_raw):
+        x, y = torch.zeros(x_raw.shape[0],1,64,1563, dtype=torch.float32), -torch.ones(x_raw.shape[0],64,1563, dtype=torch.long)
+        r = torch.norm(x_raw, dim=-1)
+        mask = r > 0
+        t = torch.round(31*(9*torch.arccos(x_raw[...,2]/r)/np.pi - 4.)).to(torch.long)
+        p = torch.round(781.5*torch.atan2(x_raw[...,1], x_raw[...,0])/np.pi + 780.5).to(torch.long)
+        
+        x[:,0,t[mask],p[mask]] = 2*(torch.pow(r[mask]/100, 1/4) - .5)
+        y[:,t[mask],p[mask]] = y_raw[mask]
+            
+        return x.to('cuda', dtype=torch.float32), y.to('cuda', torch.long)
+
     def train_epoch(self, epoch):
         pbar = tqdm(self.tloader, total=self.args.validate_every_steps, desc="Training Epoch %d"%(epoch+1))
         metrics = Metrics(self.args.class_set)
@@ -140,8 +152,8 @@ class Trainer():
             lr = lr_scheduler(self.optim, curr_iter, self.args.lr, self.args.decay_over_iterations, self.args.poly_power, self.args.batch_size)
             self.writer.add_scalar('lr', lr, curr_iter)
         
-            x, y = sample[0]['lidar']['T'][0], sample[0]['lidar']['T'][1]
-            x, y = x.to('cuda', dtype=torch.float32), y.to('cuda', dtype=torch.long)
+            x_raw, y_raw = sample[0]['lidar']['T'][0], sample[0]['lidar']['T'][1].to(torch.long)
+            x, y = self.to_spherical(x_raw, y_raw)
             
             self.optim.zero_grad()
             
@@ -164,8 +176,9 @@ class Trainer():
             if curr_iter == self.args.iterations-1:
                 break
         
-        self.writer.add_mesh("train_input", x[0].cpu(), self.tset.color_label(y[0].cpu()), epoch+1, dataformats='HWC')
-        self.writer.add_mesh("train_pred", x[0].cpu(), self.tset.color_label(pred[0].cpu()), epoch+1, dataformats='HWC')
+        self.writer.add_image("train_input", self.tset.to_rgb(x[0].cpu()), epoch+1, dataformats='HWC')
+        self.writer.add_image("train_label", self.tset.color_label(y[0].cpu()), epoch+1, dataformats='HWC')
+        self.writer.add_image("train_pred", self.tset.color_label(pred[0].cpu()), epoch+1, dataformats='HWC')
         
         miou = metrics.percent_mIoU()
         self.writer.add_scalar('train_mIoU', miou, epoch+1)
@@ -178,9 +191,8 @@ class Trainer():
         with torch.no_grad():
             for i, sample in enumerate(pbar):
 
-                x, y = sample[0]['lidar']['T'][0], sample[0]['lidar']['T'][1]
-                x, y = x.to('cuda', dtype=torch.float32), y.to('cuda', dtype=torch.long)
-            
+                x_raw, y_raw = sample[0]['lidar']['T'][0], sample[0]['lidar']['T'][1].to(torch.long)
+                x, y = self.to_spherical(x_raw, y_raw)
                 
                 out = self.model(x)
                 if type(out) is tuple:
@@ -188,8 +200,9 @@ class Trainer():
                 pred = torch.argmax(out.detach(), dim=1)
                 metrics.add_sample(pred, y)
 
-        self.writer.add_mesh("val_input", x[0].cpu(), self.tset.color_label(y[0].cpu()), epoch+1, dataformats='HWC')
-        self.writer.add_mesh("val_pred", x[0].cpu(), self.tset.color_label(pred[0].cpu()), epoch+1, dataformats='HWC')
+        self.writer.add_image("val_input", self.tset.to_rgb(x[0].cpu()), epoch+1, dataformats='HWC')
+        self.writer.add_image("val_label", self.tset.color_label(y[0].cpu()), epoch+1, dataformats='HWC')
+        self.writer.add_image("val_pred", self.tset.color_label(pred[0].cpu()), epoch+1, dataformats='HWC')
 
         self.model.train()
         return metrics.percent_mIoU()
