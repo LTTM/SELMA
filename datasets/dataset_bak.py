@@ -59,13 +59,13 @@ class BaseDataset(Dataset):
                 if gt is not None: H, W = gt.shape
                 if depth is not None: H, W = depth.shape
                 if self.resize_to.index('') == 0:
-                    resize_to = (int(W*self.resize_to[1]/H), self.resize_to[1])
+                    self.resize_to[0] = int(W*self.resize_to[1]/H)
                 else:
-                    resize_to = (self.resize_to[0], int(H*self.resize_to[0]/W))
+                    self.resize_to[1] = int(H*self.resize_to[0]/W)
 
-            if rgb is not None: rgb = cv.resize(rgb, resize_to, interpolation=cv.INTER_AREA) # usually images are downsized, best results obtained with inter_area
-            if gt is not None: gt = cv.resize(gt, resize_to, interpolation=cv.INTER_NEAREST_EXACT) # labels must be mapped as-is
-            if depth is not None: depth = cv.resize(depth, resize_to, interpolation=cv.INTER_NEAREST_EXACT)
+            if rgb is not None: rgb = cv.resize(rgb, self.resize_to, interpolation=cv.INTER_AREA) # usually images are downsized, best results obtained with inter_area
+            if gt is not None: gt = cv.resize(gt, self.resize_to, interpolation=cv.INTER_NEAREST_EXACT) # labels must be mapped as-is
+            if depth is not None: depth = cv.resize(depth, self.resize_to, interpolation=cv.INTER_NEAREST_EXACT)
 
         if self.crop_to is not None:
             if rgb is not None: H, W, _ = rgb.shape
@@ -128,16 +128,6 @@ class BaseDataset(Dataset):
             sigma = random.random()*self.kwargs['blur_mul']
             rgb = cv.GaussianBlur(rgb, (0,0), sigma)
             
-        if depth is not None and self.kwargs['depth_noise']:
-            if self.kwargs['depth_noise_mode'] == 'awgn':
-                noise = np.random.normal(size=depth.shape)/self.kwargs['depth_noise_scale'] # the rescaling is needed to align distances, this way std=.1 meter
-            if self.kwargs['depth_noise_mode'] == 'poisson':
-                noise = np.random.poisson(size=depth.shape)/self.kwargs['depth_noise_scale'] # the rescaling is needed to align distances, this way std=.1 meter
-            if self.kwargs['depth_noise_mode'] == 'awgn_weighted':
-                noise = np.random.normal(size=depth.shape)*depth/(self.kwargs['depth_noise_scale']/1000)
-            if self.kwargs['depth_noise_mode'] == 'poisson_weighted':
-                noise = np.random.poisson(size=depth.shape)*depth/(self.kwargs['depth_noise_scale']/1000)
-            depth = np.clip(depth+noise, a_min=0, a_max=1)
         return rgb, gt, depth
 
     def __getitem__(self, item):
@@ -163,14 +153,10 @@ class BaseDataset(Dataset):
 
     def to_pytorch(self, rgb=None, gt=None, depth=None):
         if not self.return_grayscale:
-            if rgb is not None:
-                rgb = torch.from_numpy(np.transpose((rgb[...,::-1]-[104.00698793, 116.66876762, 122.67891434]), (2, 0, 1)).astype(np.float32))
-                #rgb = torch.from_numpy(np.transpose((rgb[...,::-1]/255.-[0.485, 0.456, 0.406])/[0.485, 0.456, 0.406], (2, 0, 1)).astype(np.float32))
+            if rgb is not None: rgb = torch.from_numpy(np.transpose((rgb[...,::-1]/255.-[0.485, 0.456, 0.406])/[0.485, 0.456, 0.406], (2, 0, 1)).astype(np.float32))
         else:
-            if rgb is not None:
-                rgb = torch.from_numpy(np.transpose(np.expand_dims(cv.cvtColor(rgb, cv.COLOR_BGR2GRAY)/127.5 -1, -1), (2, 0, 1)).astype(np.float32))
-        if gt is not None:
-            gt = torch.from_numpy(gt.astype(np.long))
+            if rgb is not None: rgb = torch.from_numpy(np.transpose(np.expand_dims(cv.cvtColor(rgb, cv.COLOR_BGR2GRAY)/127.5 -1, -1), (2, 0, 1)).astype(np.float32))
+        if gt is not None: gt = torch.from_numpy(gt.astype(np.long))
         if depth is not None:
             if self.depth_mode == 'linear':
                 depth = torch.from_numpy((2*depth-1.).astype(np.float32)).unsqueeze(0) # depth should be normalized in [0,1] before input
@@ -184,7 +170,7 @@ class BaseDataset(Dataset):
 
     def to_rgb(self, tensor, force_gray=False):
         if not (self.return_grayscale or force_gray):
-            t = np.array(tensor.transpose(0,1).transpose(1,2))+[104.00698793, 116.66876762, 122.67891434]
+            t = (np.array(tensor.transpose(0,1).transpose(1,2))*[0.485, 0.456, 0.406]+[0.485, 0.456, 0.406])*255.
         else:
             t = (np.array(tensor.transpose(0,1).transpose(1,2))+1.)*127.5
         t = np.round(t).astype(np.uint8) # rgb

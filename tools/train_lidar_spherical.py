@@ -132,14 +132,18 @@ class Trainer():
             self.logger.info("Best validation score is %.2f at epoch %d"%(self.best_miou, self.best_epoch+1))
 
     def to_spherical(self, x_raw, y_raw):
-        x, y = torch.zeros(x_raw.shape[0],1,64,1563, dtype=torch.float32), -torch.ones(x_raw.shape[0],64,1563, dtype=torch.long)
+        x, y = torch.ones(x_raw.shape[0],1,64,1563, dtype=torch.float32), -torch.ones(x_raw.shape[0],64,1563, dtype=torch.long)
         r = torch.norm(x_raw, dim=-1)
         mask = r > 0
         t = torch.round(31*(9*torch.arccos(x_raw[...,2]/r)/np.pi - 4.)).to(torch.long)
         p = torch.round(781.5*torch.atan2(x_raw[...,1], x_raw[...,0])/np.pi + 780.5).to(torch.long)
         
-        x[:,0,t[mask],p[mask]] = 2*(torch.pow(r[mask]/100, 1/4) - .5)
+        x[:,0,t[mask],p[mask]] = 2*(torch.pow(r[mask]/100, 1/4) - .5) #2*(torch.log(r[mask]+1)/np.log(101) -.5) #2*(r[mask]/100 -.5) #2*(torch.pow(r[mask]/100, 1/4) - .5)
         y[:,t[mask],p[mask]] = y_raw[mask]
+        
+        #if np.random.rand() < .5:
+        #    x = torch.flip(x, dims=[-1])
+        #    y = torch.flip(y, dims=[-1])
             
         return x.to('cuda', dtype=torch.float32), y.to('cuda', torch.long)
 

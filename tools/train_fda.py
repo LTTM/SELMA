@@ -16,8 +16,12 @@ from tqdm import tqdm
 from utils.idsmask import ids_dict
 from utils.argparser import init_params, init_logger
 from utils.metrics import Metrics
+
 from models.model import SegmentationModel
 
+from datasets.selma_fda import SELMA_FDA
+from datasets.carlaLTTM import LTTMDataset
+from datasets.cityscapes_white import CityDataset
 
 def set_seed(seed):
     np.random.seed(seed)
@@ -38,28 +42,7 @@ class Trainer():
         self.writer = writer
         self.logger = logger
 
-        self.tset = args.dataset(root_path=args.root_path,
-                                 splits_path=args.splits_path,
-                                 split=args.train_split,
-                                 resize_to=args.rescale_size,
-                                 crop_to=args.crop_size if args.crop_images else None,
-                                 augment_data=args.augment_data,
-                                 flip=args.random_flip,
-                                 gaussian_blur=args.gaussian_blur,
-                                 blur_mul=args.blur_mul,
-                                 gaussian_noise=args.gaussian_noise,
-                                 noise_mul=args.noise_mul,
-                                 color_shift=args.color_shift,
-                                 color_jitter=args.color_jitter,
-                                 cshift_intensity=args.cshift_intensity,
-                                 wshift_intensity=args.wshift_intensity,
-                                 sensors=['rgb', 'semantic'],
-                                 town=args.town,
-                                 weather=args.weather,
-                                 time_of_day=args.time_of_day,
-                                 sensor_positions=args.positions,
-                                 class_set=args.class_set,
-                                 return_grayscale=args.input_channels==1)
+        self.tset = SELMA_FDA()
         self.tloader = data.DataLoader(self.tset,
                                        shuffle=True,
                                        num_workers=args.dataloader_workers,
@@ -67,19 +50,12 @@ class Trainer():
                                        drop_last=True,
                                        pin_memory=args.pin_memory)
                                  
-        self.vset = args.dataset(root_path=args.root_path,
-                                 splits_path=args.splits_path,
-                                 split=args.val_split,
-                                 resize_to=args.rescale_size,
-                                 crop_to=None,
-                                 augment_data=False,
+        self.vset = LTTMDataset(root_path = "D:/Datasets/SELMA/data",
+                                 splits_path = "D:/Datasets/SELMA/splits",
+                                 split = "val_rand",
                                  sensors=['rgb', 'semantic'],
-                                 town=args.town,
-                                 weather=args.weather,
-                                 time_of_day=args.time_of_day,
-                                 sensor_positions=args.positions,
-                                 class_set=args.class_set,
-                                 return_grayscale=args.input_channels==1)
+                                 augment_data=False,
+                                 resize_to=(1280,640))
         self.vloader = data.DataLoader(self.vset,
                                        shuffle=False,
                                        num_workers=args.dataloader_workers,
@@ -91,19 +67,12 @@ class Trainer():
         
         
         if hasattr(args, 'validate_on_target') and args.validate_on_target:
-            self.tvset = args.target_dataset(root_path=args.target_root_path,
-                                             splits_path=args.target_splits_path,
-                                             split=args.target_val_split,
-                                             resize_to=args.target_rescale_size,
-                                             crop_to=None,
-                                             augment_data=False,
-                                             sensors=['rgb', 'semantic'],
-                                             town=args.town,
-                                             weather=args.weather,
-                                             time_of_day=args.time_of_day,
-                                             sensor_positions=args.positions,
-                                             class_set=args.class_set,
-                                             return_grayscale=args.input_channels==1)
+            self.tvset = CityDataset(root_path = "F:/Dataset/Cityscapes_extra",
+                                     splits_path = "F:/Dataset/Cityscapes_extra",
+                                     sensors=['rgb', 'semantic'],
+                                     split='val',
+                                     augment_data=False,
+                                     resize_to=(1280,640))
             self.tvloader = data.DataLoader(self.tvset,
                                              shuffle=False,
                                              num_workers=args.dataloader_workers,
@@ -112,7 +81,7 @@ class Trainer():
                                              pin_memory=args.pin_memory)
 
         # to be changed when support to different class sets is added
-        num_classes = len(self.tset.cnames)
+        num_classes = len(self.vset.cnames)
         self.logger.info("Training on class set: %s, Classes: %d"%(args.class_set, num_classes))
         
         self.model = SegmentationModel(args.input_channels, num_classes, args.classifier)
@@ -127,11 +96,11 @@ class Trainer():
             ws = ws.sum()/ws # i.e. 1/(ws/ws.sum())
             self.logger.info("Using CE-Class Weights:\n"+str(ws))
         
-        if self.args.sup_loss == 'ce':
-            self.loss = CrossEntropyLoss(ignore_index=-1, weight=torch.FloatTensor(ws) if self.args.ce_use_weights else None)
-        elif self.args.sup_loss == 'msiw':
-            self.loss = MSIW(self.args.alpha_msiw, ignore_index=-1)
+        self.loss = CrossEntropyLoss(ignore_index=-1, weight=torch.FloatTensor(ws) if self.args.ce_use_weights else None)
+        self.loss_t = MSIW(.2, ignore_index=-1)
+        
         self.loss.to('cuda')
+        self.loss_t.to('cuda')
 
         self.best_miou = -1
         self.best_epoch = -1
@@ -174,15 +143,12 @@ class Trainer():
             lr = lr_scheduler(self.optim, curr_iter, self.args.lr, self.args.decay_over_iterations, self.args.poly_power, self.args.batch_size)
             self.writer.add_scalar('lr', lr, curr_iter)
         
-            x, y = sample[0]['rgb'], sample[0]['semantic']
-            x = x[self.args.positions].to('cuda', dtype=torch.float32) if type(x) is dict else x.to('cuda', dtype=torch.float32)
-            y = y[self.args.positions].to('cuda', dtype=torch.long) if type(y) is dict else y.to('cuda', dtype=torch.long)
+            x, y, x_t = sample
+            x, y = x.to('cuda', dtype=torch.float32), y.to('cuda', dtype=torch.long)
             
             self.optim.zero_grad()
             
-            out = self.model(x)
-            if type(out) is tuple:
-                out, feats = out
+            out, _ = self.model(x)
             l = self.loss(out, y)
             l.backward()
             self.writer.add_scalar('sup_loss', l.item(), curr_iter)
@@ -190,6 +156,13 @@ class Trainer():
             pred = torch.argmax(out.detach(), dim=1)
             metrics.add_sample(pred, y)
             self.writer.add_scalar('step_mIoU', metrics.percent_mIoU(), curr_iter)
+            
+            if epoch > 4:
+                x_t = x_t.to('cuda', dtype=torch.float32)
+                out_t, _ = self.model(x_t)
+                lt = self.loss_t(out_t)
+                lt.backward()
+                self.writer.add_scalar('msiw_loss', lt.item(), curr_iter)
             
             self.optim.step()
             
@@ -199,9 +172,9 @@ class Trainer():
             if curr_iter == self.args.iterations-1:
                 break
         
-        self.writer.add_image("train_input", self.tset.to_rgb(x[0].cpu()), epoch+1, dataformats='HWC')
-        self.writer.add_image("train_label", self.tset.color_label(y[0].cpu()), epoch+1, dataformats='HWC')
-        self.writer.add_image("train_pred", self.tset.color_label(pred[0].cpu()), epoch+1, dataformats='HWC')
+        self.writer.add_image("train_input", self.vset.to_rgb(x[0].cpu()), epoch+1, dataformats='HWC')
+        self.writer.add_image("train_label", self.vset.color_label(y[0].cpu()), epoch+1, dataformats='HWC')
+        self.writer.add_image("train_pred", self.vset.color_label(pred[0].cpu()), epoch+1, dataformats='HWC')
         
         miou = metrics.percent_mIoU()
         self.writer.add_scalar('train_mIoU', miou, epoch+1)
@@ -215,8 +188,8 @@ class Trainer():
             for i, sample in enumerate(pbar):
 
                 x, y = sample[0]['rgb'], sample[0]['semantic']
-                x = x[self.args.positions].to('cuda', dtype=torch.float32) if type(x) is dict else x.to('cuda', dtype=torch.float32)
-                y = y[self.args.positions].to('cuda', dtype=torch.long) if type(y) is dict else y.to('cuda', dtype=torch.long)
+                x = x['D'].to('cuda', dtype=torch.float32) if type(x) is dict else x.to('cuda', dtype=torch.float32)
+                y = y['D'].to('cuda', dtype=torch.long) if type(y) is dict else y.to('cuda', dtype=torch.long)
                 
                 out = self.model(x)
                 if type(out) is tuple:
@@ -224,9 +197,9 @@ class Trainer():
                 pred = torch.argmax(out.detach(), dim=1)
                 metrics.add_sample(pred, y)
 
-        self.writer.add_image("val_input", self.tset.to_rgb(x[0].cpu()), epoch+1, dataformats='HWC')
-        self.writer.add_image("val_label", self.tset.color_label(y[0].cpu()), epoch+1, dataformats='HWC')
-        self.writer.add_image("val_pred", self.tset.color_label(pred[0].cpu()), epoch+1, dataformats='HWC')
+        self.writer.add_image("val_input", self.vset.to_rgb(x[0].cpu()), epoch+1, dataformats='HWC')
+        self.writer.add_image("val_label", self.vset.color_label(y[0].cpu()), epoch+1, dataformats='HWC')
+        self.writer.add_image("val_pred", self.vset.color_label(pred[0].cpu()), epoch+1, dataformats='HWC')
 
         self.model.train()
         return metrics.percent_mIoU()

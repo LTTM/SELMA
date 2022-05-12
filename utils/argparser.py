@@ -201,6 +201,13 @@ def init_params(train_type='source'):
         argparser.add_argument('--depth_mode', default='root4', type=str,
                                choices=['log', 'root4', 'linear', 'sqrt'],
                                help='type of prepreocessing for the depth')
+        argparser.add_argument('--depth_noise', default=False, type=str2bool,
+                               help='whether to add noise to the depth')
+        argparser.add_argument('--depth_noise_mode', default='awgn', type=str,
+                               choices=['awgn', 'poisson', 'awgn_weighted', 'poisson_weighted'],
+                               help='type of noise to be added to the depth')
+        argparser.add_argument('--depth_noise_scale', default=1000, type=int,
+                               help='noise intensity, denominator - 1000 == 1m, 10000 == .1m')
         argparser.add_argument('--depth_feed_mode', default='input', type=str,
                                choices=['input', 'layer1'],
                                help='How to provide depth information to the netowork')

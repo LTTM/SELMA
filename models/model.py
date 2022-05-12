@@ -31,6 +31,8 @@ def SegmentationModel(inchs, num_classes, classifier, pretrained=True, depth_fee
                     restore_from = './models/backbone_checkpoints/resnet101-5d3b4d8f-rgbd-input.pth'
                 elif depth_feed_mode == 'layer1':
                     restore_from = './models/backbone_checkpoints/resnet101-5d3b4d8f-rgbd-layer1.pth'
+            elif inchs == 9:
+                restore_from = './models/backbone_checkpoints/resnet101-5d3b4d8f-9chs.pth'
             else:
                 restore_from = './models/backbone_checkpoints/resnet101-5d3b4d8f-rgb.pth'
             saved_state_dict = torch.load(restore_from)
@@ -41,7 +43,7 @@ def SegmentationModel(inchs, num_classes, classifier, pretrained=True, depth_fee
                 if not i_parts[1] == 'layer5' and not i_parts[0] == 'fc':
                     new_params[i] = saved_state_dict[i]
 
-            model.load_state_dict(new_params, strict=inchs in [1,3,4])
+            model.load_state_dict(new_params, strict=inchs in [1,3,4,9])
 
         # add backbone to model for later use
         model.parameters_dict = [{'params': model.get_1x_lr_params_NOscale(), 'lr': 1},

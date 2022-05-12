@@ -131,9 +131,15 @@ class LTTMDataset(CityDataset):
                 rgb, gt, depth = self.data_augment(rgb=rgb, gt=gt, depth=depth)
             rgb, gt, depth = self.to_pytorch(rgb=rgb, gt=gt, depth=depth)
 
+            #print(pos, type(gt))
             if rgb is not None: out_dict['rgb'][pos] = rgb
             if gt is not None: out_dict['semantic'][pos] = gt
             if depth is not None: out_dict['depth'][pos] = depth
+            
+        for k1 in out_dict:
+            for k2 in out_dict[k1]:
+                if out_dict[k1][k2] is None:
+                    out_dict[k1][k2] = {}
 
         return out_dict, ego_data, item
 
@@ -153,9 +159,8 @@ class LTTMDataset(CityDataset):
             mapped[l==k] = v
 
         to_pad = 100032 - xyz.shape[0]
-        #print(xyz.shape)
-        xyz = np.pad(xyz, ((0,to_pad), (0,0)))        
-        mapped = np.pad(mapped, (0,to_pad), constant_values=-1)
-        #print(xyz.shape, mapped.shape)
+        if to_pad>0:
+            xyz = np.pad(xyz, ((0,to_pad), (0,0)))        
+            mapped = np.pad(mapped, (0,to_pad), constant_values=-1)
         
         return (xyz, mapped)

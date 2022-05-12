@@ -28,14 +28,20 @@ class Tester():
                                  split=args.test_split,
                                  resize_to=args.rescale_size,
                                  crop_to=None,
-                                 augment_data=False,
-                                 sensors=['rgb', 'semantic'],
+                                 augment_data=True,
+                                 flip=False,
+                                 sensors=['depth', 'semantic'],
                                  town=args.town,
                                  weather=args.weather,
                                  time_of_day=args.time_of_day,
                                  sensor_positions=args.positions,
                                  class_set=args.class_set,
-                                 return_grayscale=args.input_channels==1)
+                                 return_grayscale=args.input_channels==1,
+                                 depth_mode=args.depth_mode,
+                                 depth_noise=args.depth_noise,
+                                 depth_noise_mode=args.depth_noise_mode,
+                                 depth_noise_scale=args.depth_noise_scale
+                                 )
         self.tloader = data.DataLoader(self.tset,
                                        shuffle=False,
                                        num_workers=args.dataloader_workers,
@@ -64,10 +70,9 @@ class Tester():
         with torch.no_grad():
             for i, sample in enumerate(pbar):
 
-                x, y = sample[0]['rgb'], sample[0]['semantic']
-
-                x = x[args.positions[0]].to('cuda', dtype=torch.float32) if type(x) is dict else x.to('cuda', dtype=torch.float32)
-                y = y[args.positions[0]].to('cuda', dtype=torch.long) if type(y) is dict else y.to('cuda', dtype=torch.long)
+                x, y = sample[0]['depth'], sample[0]['semantic']
+                x = x['D'].to('cuda', dtype=torch.float32) if type(x) is dict else x.to('cuda', dtype=torch.float32)
+                y = y['D'].to('cuda', dtype=torch.long) if type(y) is dict else y.to('cuda', dtype=torch.long)
                 
                 out = self.model(x)
                 if type(out) is tuple:
@@ -94,7 +99,7 @@ class Tester():
 
 if __name__ == "__main__":
     
-    args = init_params('test')
+    args = init_params('depthtest')
     writer, logger = init_logger(args)
     
     tester = Tester(args, writer, logger)

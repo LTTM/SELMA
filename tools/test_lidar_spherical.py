@@ -3,9 +3,13 @@ sys.path.append(os.path.abspath('.'))
 
 import numpy as np
 import random
+
 import torch
 torch.backends.cudnn.benchmark = True
+
 from torch.nn import CrossEntropyLoss
+from utils.losses import MSIW
+
 from torch.utils import data
 from tqdm import tqdm
 
@@ -14,8 +18,19 @@ from utils.argparser import init_params, init_logger
 from utils.metrics import Metrics
 from models.model import SegmentationModel
 
-#from datasets.cityscapes_white import CityDataset
-#        self.tset = CityDataset(root_path=args.root_path,
+
+def set_seed(seed):
+    np.random.seed(seed)
+    random.seed(seed)
+    torch.manual_seed(seed)
+    
+def lr_scheduler(optimizer, iteration, init_lr, decay_over, poly_power, batch_size):
+    max_iters = decay_over//batch_size
+    lr = init_lr * (1 - float(iteration) / max_iters) ** poly_power
+    optimizer.param_groups[0]["lr"] = lr
+    if len(optimizer.param_groups) == 2:
+        optimizer.param_groups[1]["lr"] = 10 * lr
+    return lr
 
 class Tester():
     def __init__(self, args, writer, logger):
@@ -29,11 +44,11 @@ class Tester():
                                  resize_to=args.rescale_size,
                                  crop_to=None,
                                  augment_data=False,
-                                 sensors=['rgb', 'semantic'],
+                                 sensors=['lidar'],
                                  town=args.town,
                                  weather=args.weather,
                                  time_of_day=args.time_of_day,
-                                 sensor_positions=args.positions,
+                                 sensor_positions=['T'],
                                  class_set=args.class_set,
                                  return_grayscale=args.input_channels==1)
         self.tloader = data.DataLoader(self.tset,
@@ -48,7 +63,6 @@ class Tester():
         self.logger.info("Training on class set: %s, Classes: %d"%(args.class_set, num_classes))
         
         self.model = SegmentationModel(args.input_channels, num_classes, args.classifier)
-        self.model.to('cuda')
         assert os.path.exists(args.ckpt_file), "Checkpoint [%s] not found, aborting..."%(args.ckpt_file)
         
         self.logger.info("Loading checkpoint")
@@ -56,7 +70,19 @@ class Tester():
         self.logger.info("Checkpoint loaded successfully")
         self.model.to('cuda')
         self.model.eval()
+
+    def to_spherical(self, x_raw, y_raw):
+        x, y = torch.ones(x_raw.shape[0],1,64,1563, dtype=torch.float32), -torch.ones(x_raw.shape[0],64,1563, dtype=torch.long)
+        r = torch.norm(x_raw, dim=-1)
+        mask = r > 0
+        t = torch.round(31*(9*torch.arccos(x_raw[...,2]/r)/np.pi - 4.)).to(torch.long)
+        p = torch.round(781.5*torch.atan2(x_raw[...,1], x_raw[...,0])/np.pi + 780.5).to(torch.long)
         
+        x[:,0,t[mask],p[mask]] = 2*(torch.pow(r[mask]/100, 1/4) - .5)
+        y[:,t[mask],p[mask]] = y_raw[mask]
+            
+        return x.to('cuda', dtype=torch.float32), y.to('cuda', torch.long)
+
     def test(self):
         pbar = tqdm(self.tloader, total=len(self.tset), desc="Testing")
         metrics = Metrics(self.args.class_set, log_colors=True)
@@ -64,10 +90,8 @@ class Tester():
         with torch.no_grad():
             for i, sample in enumerate(pbar):
 
-                x, y = sample[0]['rgb'], sample[0]['semantic']
-
-                x = x[args.positions[0]].to('cuda', dtype=torch.float32) if type(x) is dict else x.to('cuda', dtype=torch.float32)
-                y = y[args.positions[0]].to('cuda', dtype=torch.long) if type(y) is dict else y.to('cuda', dtype=torch.long)
+                x_raw, y_raw = sample[0]['lidar']['T'][0], sample[0]['lidar']['T'][1].to(torch.long)
+                x, y = self.to_spherical(x_raw, y_raw)
                 
                 out = self.model(x)
                 if type(out) is tuple:
@@ -91,6 +115,7 @@ class Tester():
         for cset in ids_dict[self.args.class_set]:
             self.writer.add_scalar("test_mIoU_%s"%cset, metrics.percent_mIoU(cset), 0)
             self.logger.info("Evaluation on Class Set: %s\n"%cset + metrics.str_class_set(cset))
+
 
 if __name__ == "__main__":
     

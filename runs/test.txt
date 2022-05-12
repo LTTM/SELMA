@@ -18,7 +18,7 @@ python tools/test.py --dataset "city" --root_path "F:/Dataset/Cityscapes_extra" 
 
 python tools/test.py --dataset "lttm" --logdir "evals/depth/gray" --root_path "D:/Datasets/CarlaLTTM/data" --splits_path "D:/Datasets/CarlaLTTM/splits" --rescale_size "1280," --test_split "test_rand" --input_channels 1 --ckpt_file "C:/Users/barbato/Desktop/carla_analyses/depth/grayscale.pth" --classifier "DeepLabV2MSIW"
 
-
+python tools/test.py --dataset "city" --root_path "F:/Dataset/Cityscapes_extra" --splits_path "F:/Dataset/Cityscapes_extra" --logdir "evals/city_coarse/selma" --rescale_size "1280," --classifier "DeepLabV2MSIW" --ckpt_file "C:/Users/barbato/Desktop/carla_analyses/city_coarse/city_coarse.pth"
 
 
 

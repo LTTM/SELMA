@@ -21,6 +21,8 @@ class CityDataset(BaseDataset):
         self.ignore_index = -1
     
     def map_to_train(self, gt):
+        if gt is None:
+            return None
         gt_clone = self.ignore_index*np.ones(gt.shape, dtype=np.long)
         if self.raw_to_train is not None:
             for k,v in self.raw_to_train.items():
