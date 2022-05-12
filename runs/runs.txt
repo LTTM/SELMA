@@ -1,0 +1,27 @@
+python tools/train.py --dataset "gta" --root_path "F:/Dataset/GTA/full" --splits_path "F:/Dataset/GTA/full" --logdir "logs/gta_dlv2" --classifier "DeepLabV2MSIW" --target_dataset "city" --target_root_path "F:/Dataset/Cityscapes_extra" --target_splits_path "F:/Dataset/Cityscapes_extra" --validate_on_target True
+
+python tools/train.py --dataset "lttm" --root_path "D:/Datasets/CarlaLTTM/data" --splits_path "D:/Datasets/CarlaLTTM/splits" --train_split "train_rand" --val_split "val_rand" --logdir "logs/carla_gray" --classifier "DeepLabV2MSIW" --input_channels 1
+
+python tools/train.py --dataset "idda" --root_path "D:/Datasets/IDDAbest" --splits_path "D:/Datasets/IDDAbest" --logdir "logs/idda_dlv2" --classifier "DeepLabV2MSIW" --target_dataset "city" --target_root_path "F:/Dataset/Cityscapes_extra" --target_splits_path "F:/Dataset/Cityscapes_extra" --validate_on_target True --class_set "idda16"
+
+------------------------------
+
+python tools/train_UDA_FS.py --dataset "lttm" --root_path "D:/Datasets/CarlaLTTM" --splits_path "D:/Datasets/CarlaLTTM/splits" --train_split "train_mc" --val_split "val_mc" --time_of_day "noon" --logdir "logs/carla_dlv2" --classifier "DeepLabV2MSIW" --target_dataset "city" --target_root_path "F:/Dataset/Cityscapes_extra" --target_splits_path "F:/Dataset/Cityscapes_extra"
+
+------------------------------
+
+python tools/train_lidar.py --dataset "lttm" --root_path "D:/Datasets/CarlaLTTM/data" --splits_path "D:/Datasets/CarlaLTTM/splits" --train_split "train_rand" --val_split "val_rand" --logdir "logs/carla_depth" --classifier "DeepLabV2MSIW" --input_channels 1
+
+python tools/train_lidar.py --dataset "lttm" --root_path "D:/Datasets/CarlaLTTM/data" --splits_path "D:/Datasets/CarlaLTTM/splits" --train_split "train_rand" --val_split "val_rand" --logdir "logs/carla_randlanet" --classifier "RandLANet"
+
+python tools/train_lidar_spherical.py --dataset "lttm" --root_path "D:/Datasets/SELMA/data" --splits_path "D:/Datasets/SELMA/splits" --train_split "train_rand" --val_split "val_rand" --logdir "logs/lidar" --classifier "DeepLabV2MSIW" --input_channels 1 --batch_size 4 --iterations 250000 --validate_every_steps 6500 --dataloader_workers 8
+
+python tools/test_lidar_spherical.py --dataset "lttm" --root_path "D:/Datasets/SELMA/data" --splits_path "D:/Datasets/SELMA/splits" --test_split "test_rand" --logdir "evals/lidar/spherical" --classifier "DeepLabV2MSIW" --input_channels 1 --ckpt_file "spherical.pth"
+
+------------------------------
+python tools/train_fda.py --logdir "log/fda" --classifier "DeepLabV2MSIW" --validate_on_target True
+
+
+python tools/train_front.py --dataset "lttm" --root_path "D:/Datasets/SELMA/data" --splits_path "D:/Datasets/SELMA/splits" --train_split "train_rand" --val_split "val_rand" --logdir "logs/carla_fflfr" --classifier "DeepLabV2MSIW" --input_channels 9
+
+python tools/train.py --dataset "lttm" --root_path "D:/Datasets/SELMA/data" --splits_path "D:/Datasets/SELMA/splits" --train_split "train_rand" --val_split "val_rand" --logdir "logs/carla_front" --classifier "DeepLabV2MSIW" --sensor_positions "F"

@@ -1,0 +1,17 @@
+python tools/label_frequency.py --dataset "idd" --root_path "F:/Dataset/IDD" --splits_path "F:/Dataset/IDD"
+
+python tools/label_frequency.py --dataset "gta" --root_path "F:/Dataset/GTA/full" --splits_path "F:/Dataset/GTA/full"
+
+python tools/label_frequency.py --dataset "lttm" --root_path "D:/Datasets/CarlaLTTM/data" --splits_path "D:/Datasets/CarlaLTTM/splits" --train_split "train_rand" --val_split "val_rand"
+
+python tools/label_frequency.py --dataset "idda" --root_path "D:/Datasets/IDDAbest" --splits_path "D:/Datasets/IDDAbest"
+
+python tools/label_frequency.py --dataset "city" --root_path "F:/Dataset/Cityscapes_extra" --splits_path "F:/Dataset/Cityscapes_extra"
+
+python tools/label_frequency.py --dataset "acdc" --root_path "F:/Dataset/ACDC" --splits_path "F:/Dataset/ACDC" --rescale_size "1280,"
+
+python tools/label_frequency.py --dataset "mapi" --root_path "F:/Dataset/Mapillary" --splits_path "F:/Dataset/Mapillary" --rescale_size "1280,"
+
+python tools/label_frequency.py --dataset "tipnt" --root_path "F:/Dataset/TIP_NightTime" --splits_path "F:/Dataset/TIP_NightTime" --rescale_size "1280,"
+
+python tools/label_frequency.py --dataset "synthia" --root_path "F:/Dataset/SYNTHIA/full/RAND_CITYSCAPES" --splits_path "F:/Dataset/SYNTHIA/full/RAND_CITYSCAPES" --rescale_size "1280,"

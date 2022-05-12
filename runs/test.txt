@@ -1,0 +1,34 @@
+python tools/test.py --dataset "city" --root_path "F:/Dataset/Cityscapes_extra" --splits_path "F:/Dataset/Cityscapes_extra" --logdir "evals/city_dlv2" --rescale_size "1280," --classifier "DeepLabV2" --ckpt_file "Y:/members/barbato/Code/CV_Analyses/logs/city_DLv2/val_best.pth"
+
+python tools/test.py --dataset "mapi" --root_path "F:/Dataset/Mapillary" --splits_path "F:/Dataset/Mapillary" --logdir "evals/city_dlv2_to_mapi" --rescale_size "1280," --crop_images True --crop_size "1280,640" --classifier "DeepLabV2" --ckpt_file "Y:/members/barbato/Code/CV_Analyses/logs/city_DLv2/val_best.pth"
+
+python tools/test.py --dataset "idd" --root_path "F:/Dataset/IDD" --splits_path "F:/Dataset/IDD" --logdir "evals/city_dlv2_to_idd" --rescale_size "1280," --classifier "DeepLabV2" --ckpt_file "Y:/members/barbato/Code/CV_Analyses/logs/city_DLv2/val_best.pth"
+
+python tools/test.py --dataset "lttm" --root_path "D:/Datasets/CarlaLTTM" --splits_path "D:/Datasets/CarlaLTTM" --weather "clear" --time_of_day "noon" --logdir "evals/city_dlv2_to_ccn" --rescale_size "1280," --classifier "DeepLabV2" --ckpt_file "Y:/members/barbato/Code/CV_Analyses/logs/city_DLv2/val_best.pth"
+
+python tools/test.py --dataset "gta" --root_path "F:/Dataset/GTA/full" --splits_path "F:/Dataset/GTA/full" --logdir "evalst/city_dlv2_to_gta" --rescale_size "1280," --classifier "DeepLabV2" --ckpt_file "Y:/members/barbato/Code/CV_Analyses/logs/city_DLv2/val_best.pth" --test_split "val"
+
+python tools/test.py --dataset "city" --root_path "F:/Dataset/Cityscapes_extra" --splits_path "F:/Dataset/Cityscapes_extra" --logdir "evals/so_sjb_long_citywhite" --rescale_size "1280," --classifier "DeepLabV2MSIW" --ckpt_file "C:/Users/barbato/Desktop/carla_analyses/source_only_b1/carla_mcn_b1_sjb_long/latest.pth"
+
+python tools/test.py --dataset "city" --root_path "F:/Dataset/Cityscapes_extra" --splits_path "F:/Dataset/Cityscapes_extra" --logdir "evals/so/carla_rand" --rescale_size "1280," --classifier "DeepLabV2MSIW" --ckpt_file "C:/Users/barbato/Desktop/carla_analyses/so/carla_rand.pth"
+
+python tools/test.py --dataset "city" --root_path "F:/Dataset/Cityscapes_extra" --splits_path "F:/Dataset/Cityscapes_extra" --logdir "evals/msiw/gta_latest" --rescale_size "1280," --classifier "DeepLabV2MSIW" --ckpt_file "C:/Users/barbato/Desktop/carla_analyses/msiw/latest/gta.pth"
+
+
+
+python tools/test.py --dataset "lttm" --logdir "evals/depth/gray" --root_path "D:/Datasets/CarlaLTTM/data" --splits_path "D:/Datasets/CarlaLTTM/splits" --rescale_size "1280," --test_split "test_rand" --input_channels 1 --ckpt_file "C:/Users/barbato/Desktop/carla_analyses/depth/grayscale.pth" --classifier "DeepLabV2MSIW"
+
+python tools/test.py --dataset "city" --root_path "F:/Dataset/Cityscapes_extra" --splits_path "F:/Dataset/Cityscapes_extra" --logdir "evals/city_coarse/selma" --rescale_size "1280," --classifier "DeepLabV2MSIW" --ckpt_file "C:/Users/barbato/Desktop/carla_analyses/city_coarse/city_coarse.pth"
+
+
+
+ -------------- DATASETS ----------------
+
+python tools/test_dataset.py --dataset "idda" --root_path "D:/Datasets/IDDAbest" --splits_path "D:/Datasets/IDDAbest" --class_set "idda16"
+python tools/test_dataset.py --dataset "gta" --root_path "F:/Dataset/GTA/full" --splits_path "F:/Dataset/GTA/full" --rescale_size "1280," --test_split "val"
+python tools/test_dataset.py --dataset "lttm" --root_path "D:/Datasets/CarlaLTTM" --splits_path "D:/Datasets/CarlaLTTM/splits" --time_of_day "noon" --rescale_size "1280," --test_split "test_mc" --train_split "train_mc" --val_split "val_mc"
+python tools/test_dataset.py --dataset "mapi" --root_path "F:/Dataset/Mapillary" --splits_path "F:/Dataset/Mapillary" --rescale_size "1280,"
+python tools/test_dataset.py --dataset "acdc" --root_path "F:/Dataset/ACDC" --splits_path "F:/Dataset/ACDC" --rescale_size "1280,"
+python tools/test_dataset.py --dataset "city" --root_path "F:/Dataset/Cityscapes_fog" --splits_path "F:/Dataset/Cityscapes_fog" --rescale_size "1280,"
+python tools/test_dataset.py --dataset "city" --root_path "F:/Dataset/Cityscapes_rain" --splits_path "F:/Dataset/Cityscapes_rain" --rescale_size "1280,"
+python tools/test_dataset.py --dataset "tipnt" --root_path "F:/Dataset/TIP_NightTime" --splits_path "F:/Dataset/TIP_NightTime" --rescale_size "1280,"
