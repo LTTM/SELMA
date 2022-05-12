@@ -1,6 +1,12 @@
 # SELMA
 Thank you for considering the SELMA dataset for your work.
 
+This repository contains all the code used to develop and analyze the dataset.
+We provide three different branches:
+1. simulator: fork of the original CARLA 0.9.12 repository, containing our modifications to the simulator code (Adding support to Cityscapes classes, new models and weather presets).
+2. analyses: the original pytorch implementation of the code used to extract the analyses provided with the paper (unless otherwise indicated, e.g. in Cylinder3D's case).
+3. campaign: original python code used to generate the dataset's samples, uses our modified CARLA's PythonAPI to work.
+
 **SELMA v0.1 has just been released**. 
 SELMA is a novel synthetic dataset for semantic segmentation based on the [CARLA](https://carla.org/) simulator, that contains more than 30K unique waypoints acquired from 24 different sensors including RGB, depth, semantic cameras and LiDARs, in
 27 different atmospheric and daytime conditions, for a total of more than
