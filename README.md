@@ -36,7 +36,7 @@ Semantic labeling for both camera and LiDAR data into 36 distinct classes, with 
 We will provide soon a dataloader to remap the SELMA classes to the most popular benchmarks.
 For now, the following mapping can be used to map from 36 classes to 19 classes (Cityscapes style):
 
-```raw_to_train = {-1:-1, 0:-1, 1:2, 2:4, 3:-1, 4:-1, 5:5, 6:0, 7:0, 8:1, 9:8, 11:3, 12:7, 13:10, 14:-1, 15:-1, 16:-1, 17:-1, 18:6, 19:-1, 21:-1, 22:9, 40:11, 41:12, 100:13, 101:14, 102:15, 103:16, 105:18, 255:-1}```
+```raw_to_train = {-1:-1, 0:-1, 1:2, 2:4, 3:-1, 4:-1, 5:5, 6:0, 7:0, 8:1, 9:8, 11:3, 12:7, 13:10, 14:-1, 15:-1, 16:-1, 17:-1, 18:6, 19:-1, 21:-1, 22:9, 40:11, 41:12, 100:13, 101:14, 102:15, 103:16, 104:17, 105:18, 255:-1}```
 
 Where -1 indicates the void classes.
 
