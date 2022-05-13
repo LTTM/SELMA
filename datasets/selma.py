@@ -5,7 +5,7 @@ from plyfile import PlyData
 import cv2 as cv
 from datasets.cityscapes import CityDataset
 
-class LTTMDataset(CityDataset):
+class SELMADataset(CityDataset):
     def __init__(self,
                  split_extension='csv',
                  split_separator=',',
