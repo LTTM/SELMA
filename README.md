@@ -23,7 +23,8 @@ Specifically:
 - **24 sensors** were used:
   - 3 Semantic LiDARs (TOP\LEFT\RIGHT): beside the standard spatial coordinates, the pointcloud embeds the semantic label for each point.
   - 7 RGB/Depth/Semantic Cameras (DESK\FRONT\FRONTRIGHT\FRONTLEFT\RIGHT\LEFT\BACK): high-quality 1280x640 images, with photo-realistic effects. Semantic Cameras are used as semantic groundtruth. The RGB images are provided in JPEG, the depth and semantic ones in PNG. The three type of cameras are co-located at each position.\
-All sensors are synchronized to acquire data simultanously.
+All sensors are synchronized to acquire data simultanously.\
+Note that the DEPTH provided is, in fact, the depth of each pixel from the camera - differently from the disparity provided by Cityscapes. To convert between the two one may use the following relationship: depth = focal*baseline / disparity
 - The same acquisition is available under **9 different weathers** and **3 different times-of-day**, for a total of **27 unique environmental conditions**. Note that the scenes change across different weather conditions: the same waypoint will generate a different scene when changing weather condition, e.g., the actors are re-spawned every time at random.
 ### Data Format
 The acquisitions are archived per *scene* and per *sensor*. A scene is a combination of a town and an environmental condition (weather and time-of-day). For instance, *Town02_Opt_CloudyNoon* is the scene acquired in *Town02_Opt* with a *Cloudy* sky at *Noon*. From the website it is possible to select the data to download by combining different towns and environmental conditions. Furthermore, we offer the possibility to download only a subset of sensor data (e.g., only that acquired by the *CAM_LEFT*, i.e., the camera on the left side of the vehicle).
